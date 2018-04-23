@@ -1,7 +1,7 @@
 import { ServiceModule } from '../../core';
 
 @ServiceModule({
-    route: 'seed'
+    path: 'seed'
 })
 export class SeedModule {
     
