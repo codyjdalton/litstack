@@ -37,6 +37,30 @@ export class PeopleModule {
 ## Components
 Components are used as route listeners.
 
+### Basic
+```javascript
+// people.component.ts
+import { LitComponent } from '@litstack/core';
+
+@LitComponent()
+export class PeopleComponent {
+    /**
+     * @function getPeople
+     * @description Return a list of people, paginated
+     */ 
+    @GetMapping({
+        path: '', // accessed by GET /people
+    })
+    getPeople(req, res): any  {
+        // get the list of people by params
+        return {
+            people: []
+        }
+    }
+}
+```
+
+### More Advanced
 ```javascript
 // people.component.ts
 import { LitComponent } from '@litstack/core';
@@ -46,7 +70,6 @@ import { ResourceVersions } from '../common/enums/resource-versions.enum';
 
 @LitComponent()
 export class PeopleComponent {
-
     /**
      * @function getPeople
      * @description Return a list of people, paginated
@@ -82,7 +105,3 @@ export class PeopleComponent {
     }
 }
 ```
-
-
-
-
