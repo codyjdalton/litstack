@@ -1,4 +1,4 @@
-# Typescript Service Starter Kit
+# Litstack
 
 ## Vision
 
@@ -9,7 +9,7 @@ We will need to bootstrap our app module at the index level
 
 ```javascript
 // index.ts
-import { serviceCompiler } from '@service-starter/core';
+import { serviceCompiler } from '@litstack/core';
 import { AppModule } from './modules/app.module';
 
 serviceCompiler().bootstrapModule(AppModule);
@@ -20,10 +20,10 @@ Modules can be declared and packaged with other modules:
 
 ```javascript
 // people.module.ts
-import { ServiceModule, StorageModule } from '@service-starter/core';
+import { LitModule, StorageModule } from '@litstack/core';
 import { PeopleComponent } from './components/people/people.component'
 
-@ServiceModule({
+@LitModule({
     path: 'people',
     imports: [
         StorageModule,
@@ -39,9 +39,9 @@ Components are used as route listeners.
 
 ```javascript
 // people.component.ts
-import { ServiceComponent } from '@service-starter/core';
+import { LitComponent } from '@service-starter/core';
 
-@ServiceComponent()
+@LitComponent()
 export class PeopleComponent {
 
     @GetMapping({
