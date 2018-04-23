@@ -1,7 +1,7 @@
 {
-  "name": "service-starter",
+  "name": "@litstack/service-starter",
   "version": "1.0.0",
-  "description": "",
+  "description": "## Vision",
   "main": "index.js",
   "dependencies": {
     "express": "^4.16.3",
