@@ -52,8 +52,8 @@ export class PeopleComponent {
      * @description Return a list of people, paginated
      */ 
     @GetMapping({
-        path: '', // this will be at GET /people
-        produces: ResourceVersions.PEOPLE_V1
+        path: '', // accessed by GET /people
+        produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
     @Paginated()
     getPeople(req, res): any  {
@@ -68,9 +68,9 @@ export class PeopleComponent {
      * @description Update a 'person' record
      */
     @PutMapping({
-        path: ':id', // this will be at GET /people/:id
-        consumes: ResourceVersions.PEOPLE_V1
-        produces: ResourceVersions.PEOPLE_V1
+        path: ':id', // accessed by PUT /people/:id
+        consumes: ResourceVersions.PEOPLE_V1 // Accept header
+        produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
     updatePerson(req, res): any  {
         // update person
