@@ -39,19 +39,45 @@ Components are used as route listeners.
 
 ```javascript
 // people.component.ts
-import { LitComponent } from '@service-starter/core';
+import { LitComponent } from '@litstack/core';
+import { Paginated } from '@litstack/response';
+
+import { ResourceVersions } from '../common/enums/resource-versions.enum';
 
 @LitComponent()
 export class PeopleComponent {
 
+    /**
+     * @function getPeople
+     * @description Return a list of people, paginated
+     */ 
     @GetMapping({
-        path: '/',
-        produces: 'application/vnd.people.v1+json'
+        path: '', // this will be at GET /people
+        produces: ResourceVersions.PEOPLE_V1
     })
+    @Paginated()
     getPeople(req, res): any  {
-        // endpoint logic here
+        // get the list of people by params
         return {
             people: []
+        }
+    }
+
+    /**
+     * @function updatePerson
+     * @description Update a 'person' record
+     */
+    @PutMapping({
+        path: ':id', // this will be at GET /people/:id
+        consumes: ResourceVersions.PEOPLE_V1
+        produces: ResourceVersions.PEOPLE_V1
+    })
+    updatePerson(req, res): any  {
+        // update person
+        // then... return the person
+        return {
+            fName: 'test',
+            lName: 'name'
         }
     }
 }
