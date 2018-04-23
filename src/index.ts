@@ -1,5 +1,19 @@
 import * as express from "express";
 
-const app = express();
+class Service {
 
-app.listen(8000, () => console.log("Server running on 8000!"))
+    public app;
+
+    constructor() {
+        this.onInit();
+    }
+    
+    /**
+     * @function onInit
+     * Initialize the application
+     */
+    private onInit(): void {
+        this.app = express();
+        this.app.listen(8000, () => console.log("Server running on 8000!"));
+    }
+}
