@@ -1,1 +1,8 @@
-console.log("Hello from seed");
+import { ServiceModule } from '../../core';
+
+@ServiceModule({
+    route: 'seed'
+})
+export class SeedModule {
+    
+}

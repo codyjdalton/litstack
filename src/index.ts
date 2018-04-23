@@ -1,19 +1,25 @@
-import * as express from "express";
+import { Express } from "express";
+import * as expInst from "express";
+
+// TEST //
+import { SeedModule } from './modules/seed/seed.module';
+
+let aSeed = new SeedModule();
+// @TODO bootstrap all this...
+// TEST //
 
 class Service {
-
-    public app;
-
-    constructor() {
+    constructor(private app: Express = expInst()) {
         this.onInit();
     }
-    
+
     /**
      * @function onInit
      * Initialize the application
      */
     private onInit(): void {
-        this.app = express();
         this.app.listen(8000, () => console.log("Server running on 8000!"));
     }
 }
+
+const aService = new Service();
