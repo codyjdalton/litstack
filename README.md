@@ -56,7 +56,7 @@ export class PeopleComponent {
     })
     getPeople(req, res): Person[]  {
         // get the list of people by params
-        return [];
+        res.json([]);
     }
 }
 ```
@@ -68,10 +68,15 @@ import { LitComponent } from '@litstack/core';
 import { Paginated } from '@litstack/response';
 
 import { Person } from '../../common/models/person.model';
+import { PersonService } from '../../common/services/person.service';
 import { ResourceVersions } from '../common/enums/resource-versions.enum';
 
 @LitComponent()
 export class PeopleComponent {
+
+    constructor(private personService: PersonService) {
+    }
+
     /**
      * @function getPeople
      * @description Return a list of people, paginated
@@ -83,7 +88,10 @@ export class PeopleComponent {
     @Paginated()
     getPeople(req, res): Person[]  {
         // get the list of people by params
-        return [];
+        this.personService.fetchFromStorage({})
+            .subscribe(
+                (people: Person[]) => res.json(people)
+            )
     }
 
     /**
@@ -98,10 +106,10 @@ export class PeopleComponent {
     updatePerson(req, res): Person  {
         // update person
         // then... return the person
-        return {
+        res.json({
             fName: 'test',
             lName: 'name'
-        }
+        });
     }
 }
 ```
