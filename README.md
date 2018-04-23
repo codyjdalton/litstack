@@ -10,6 +10,7 @@ We will need to bootstrap our app module at the index level
 ```javascript
 // index.ts
 import { serviceCompiler } from '@litstack/core';
+
 import { AppModule } from './modules/app.module';
 
 serviceCompiler().bootstrapModule(AppModule);
@@ -42,6 +43,8 @@ Components are used as route listeners.
 // people.component.ts
 import { LitComponent } from '@litstack/core';
 
+import { Person } from '../../common/models/person.model';
+
 @LitComponent()
 export class PeopleComponent {
     /**
@@ -51,11 +54,9 @@ export class PeopleComponent {
     @GetMapping({
         path: '', // accessed by GET /people
     })
-    getPeople(req, res): any  {
+    getPeople(req, res): Person[]  {
         // get the list of people by params
-        return {
-            people: []
-        }
+        return [];
     }
 }
 ```
@@ -66,6 +67,7 @@ export class PeopleComponent {
 import { LitComponent } from '@litstack/core';
 import { Paginated } from '@litstack/response';
 
+import { Person } from '../../common/models/person.model';
 import { ResourceVersions } from '../common/enums/resource-versions.enum';
 
 @LitComponent()
@@ -79,11 +81,9 @@ export class PeopleComponent {
         produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
     @Paginated()
-    getPeople(req, res): any  {
+    getPeople(req, res): Person[]  {
         // get the list of people by params
-        return {
-            people: []
-        }
+        return [];
     }
 
     /**
@@ -95,7 +95,7 @@ export class PeopleComponent {
         consumes: ResourceVersions.PEOPLE_V1 // Accept header
         produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
-    updatePerson(req, res): any  {
+    updatePerson(req, res): Person  {
         // update person
         // then... return the person
         return {
