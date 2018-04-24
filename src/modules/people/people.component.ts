@@ -1,6 +1,9 @@
 /**
  * people.component
  */
-export class PeopleComponent {
+import { LitComponent } from '../../core';
 
+@LitComponent()
+export class PeopleComponent {
+    
 }
