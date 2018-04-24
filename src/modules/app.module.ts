@@ -4,6 +4,7 @@
 import { LitModule } from '../core';
 
 import { PeopleModule } from './people/people.module';
+import { PlacesModule } from './places/places.module';
 
 @LitModule({
     path: '',
