@@ -4,7 +4,8 @@
 import { LitModule } from '../core';
 
 @LitModule({
-    path: ''
+    path: '',
+    imports: []
 })
 export class AppModule {
 

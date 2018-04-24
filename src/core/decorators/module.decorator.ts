@@ -2,7 +2,9 @@
  * @TODO move this into its own file!
  */
 interface ServiceModuleConfig {
-    path: string;
+    path?: string;
+    imports?: any[];
+    exports?: any[];
 }
 
 /**
