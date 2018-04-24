@@ -4,8 +4,10 @@
   "description": "## Vision",
   "main": "index.js",
   "dependencies": {
+    "@types/reflect-metadata": "^0.1.0",
     "express": "^4.16.3",
-    "node-typescript-compiler": "^1.1.1"
+    "node-typescript-compiler": "^1.1.1",
+    "reflect-metadata": "^0.1.12"
   },
   "devDependencies": {
     "@types/express": "^4.11.1"

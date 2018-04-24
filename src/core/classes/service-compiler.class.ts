@@ -1,5 +1,29 @@
 import * as express from 'express';
 import { Express } from 'express';
+import "reflect-metadata";
+
+interface Type<T> {
+  new(...args: any[]): T;
+}
+
+const Injector = new class {
+  // A map where all registered services will be stored
+  protected services: Map<string, Type<any>> = new Map<string, Type<any>>();
+  
+  // resolving instances
+  resolve<T>(target: Type<any>): T {
+    // tokens are required dependencies, while injections are resolved tokens from the Injector
+    let tokens = Reflect.getMetadata('design:paramtypes', target) || [],
+        injections = tokens.map(token => Injector.resolve<any>(token));
+    
+    return new target(...injections);
+  }
+  
+  // store services within the injector
+  set(target: Type<any>) {
+    this.services.set(target.name, target);
+  }
+};
 
 class ServiceCompiler {
 
@@ -11,7 +35,7 @@ class ServiceCompiler {
         this.app = express();
 
         // instantiate the parent module
-        const aParent = new Parent();
+        const aParent = Injector.resolve<any>(Parent);
 
         this.addImportedRoutes(aParent);
 
@@ -28,7 +52,7 @@ class ServiceCompiler {
 
         imports.forEach((Child: any) => {
             
-            const aChild = new Child();
+            const aChild = Injector.resolve<any>(Child);
 
             // we are at the child module level...
             // now we need to add component routes...
@@ -46,7 +70,7 @@ class ServiceCompiler {
         exports.forEach(
             (Component) => {
                 
-                const aComponent = new Component();
+                const aComponent = Injector.resolve<any>(Component);
                 const props: string[] = this.getInstanceMethodNames(aComponent);
 
                 props.forEach(
