@@ -1,19 +1,26 @@
+import { definePropFactory } from '../factories/define-prop.factory';
+
 /**
  * @TODO move this into its own file!
  */
-interface ServiceModuleConfig {
+interface LitModuleConfig {
     path?: string;
     imports?: any[];
     exports?: any[];
 }
 
 /**
- * @annotation LitModule
+ * @Annotation LitModule
  * @param {ServiceModuleConfig} config
  */
-export function LitModule(config: ServiceModuleConfig = null): ClassDecorator {
+export function LitModule(config: LitModuleConfig = null): ClassDecorator {
     return (target): any => {
-        // add module code here
-        return target;
+        Object.keys(config).forEach(
+            (key: string) => definePropFactory(
+                target.prototype,
+                key,
+                config[key]
+            )
+        );
     }
 }
