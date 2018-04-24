@@ -4,6 +4,7 @@
 
 This is currently a pseudo-code exercise in designing the type of framework one would want to use for an express web service.
 
+
 ## Bootstrapping
 First, we will need to bootstrap our app module at the index level.
 
@@ -54,7 +55,7 @@ export class PeopleComponent {
 
     /**
      * @function fetchPeople
-     * @description Return a list of people, paginated
+     * @description Return a list of people
      */ 
     @GetMapping() // accessed by GET /people
     fetchPeople(input: Request): void  {
@@ -75,7 +76,7 @@ Calling GET /people would produce:
 ```typescript
 // people.component.ts
 import { LitComponent } from '@litstack/core';
-import { GetMapping, PutMapping, Request, Response } from '@litstack/http';
+import { GetMapping, PutMapping, PostMapping, Request, Response } from '@litstack/http';
 
 import { Person } from '../../common/models/person.model';
 import { PersonService } from '../../common/services/person.service';
@@ -90,10 +91,9 @@ export class PeopleComponent {
 
     /**
      * @function getPeople
-     * @description Return a list of people, paginated
+     * @description Return a list of people
      */ 
     @GetMapping({
-        path: '', // accessed by GET /people
         produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
     getPeople(req: Request): void  {
@@ -101,6 +101,22 @@ export class PeopleComponent {
         this.personService.fetchFromStorage({})
             .subscribe(
                 (people: Person[]) => this.output.respond(people)
+            )
+    }
+
+    /**
+     * @function createPerson
+     * @description Create a 'person' record
+     */
+    @PostMapping({
+        consumes: ResourceVersions.PEOPLE_V1 // Accept header
+        produces: ResourceVersions.PEOPLE_V1 // Content-Type header
+    })
+    createPerson(req: Request): void  {
+        // update person
+        this.personService.updateUser(null, req.body)
+            .subscribe(
+                (person: Person) => this.output.respond(person)
             )
     }
 
