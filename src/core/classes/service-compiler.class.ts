@@ -24,6 +24,8 @@ class ServiceCompiler {
         const path = Parent.path || '';
         const imports = Parent.imports || [];
 
+        this.addExportedComponents(Parent.path || '', Parent.exports);
+
         imports.forEach((Child: any) => {
             
             const aChild = new Child();

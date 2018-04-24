@@ -1,8 +1,8 @@
 /**
  * places.component
  */
-import { LitComponent } from '../../core';
-import { GetMapping } from '../../core';
+import { LitComponent } from '../../../core';
+import { GetMapping } from '../../../core';
 
 @LitComponent()
 export class PlacesComponent {

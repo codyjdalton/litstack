@@ -1,7 +1,7 @@
 /**
  * app.module
  */
-import { LitModule } from '../../core';
+import { LitModule } from '../../../core';
 
 import { PlacesComponent } from './places.component';
 
