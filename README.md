@@ -2,10 +2,10 @@
 
 ## Vision
 
-This is currently a mostly pseudo-code exercise in designing the type of framework one would want to use for an express service.
+This is currently a pseudo-code exercise in designing the type of framework one would want to use for an express web service.
 
 ## Bootstrapping
-We will need to bootstrap our app module at the index level
+First, we will need to bootstrap our app module at the index level.
 
 ```javascript
 // index.ts
@@ -17,18 +17,20 @@ serviceCompiler().bootstrapModule(AppModule);
 ```
 
 ## Modules
-Modules can be declared and packaged with other modules:
+Modules can be declared and packaged with other imports:
 
 ```javascript
 // people.module.ts
-import { LitModule, StorageModule } from '@litstack/core';
-import { PeopleComponent } from './components/people/people.component'
+import { LitModule } from '@litstack/core';
+
+import { PeopleComponent } from './components/people/people.component';
+import { PeopleDetailsComponent } from './components/people/people-details.component';
 
 @LitModule({
     path: 'people',
-    imports: [
-        StorageModule,
-        PeopleComponent
+    exports: [
+        PeopleComponent,
+        PeopleDetailsComponent
     ]
 })
 export class PeopleModule {
@@ -38,34 +40,42 @@ export class PeopleModule {
 ## Components
 Components are used as route listeners.
 
-### Basic
-```javascript
+### Basic Component
+```typescript
 // people.component.ts
 import { LitComponent } from '@litstack/core';
-
-import { Person } from '../../common/models/person.model';
+import { GetMapping, Request, Response } from '@litstack/http';
 
 @LitComponent()
 export class PeopleComponent {
+
+    constructor(private output: Response) {
+    }
+
     /**
-     * @function getPeople
+     * @function fetchPeople
      * @description Return a list of people, paginated
      */ 
-    @GetMapping({
-        path: '', // accessed by GET /people
-    })
-    getPeople(req, res): Person[]  {
-        // get the list of people by params
-        res.json([]);
+    @GetMapping() // accessed by GET /people
+    fetchPeople(input: Request): void  {
+        // return an empty array of people
+        this.output.respond({ people: [] });
     }
 }
 ```
+Calling GET /people would produce:
 
-### More Advanced
-```javascript
+```json
+{
+    "people": []
+}
+```
+
+### Realistic Component
+```typescript
 // people.component.ts
 import { LitComponent } from '@litstack/core';
-import { Paginated } from '@litstack/response';
+import { GetMapping, PutMapping, Request, Response } from '@litstack/http';
 
 import { Person } from '../../common/models/person.model';
 import { PersonService } from '../../common/services/person.service';
@@ -74,7 +84,8 @@ import { ResourceVersions } from '../common/enums/resource-versions.enum';
 @LitComponent()
 export class PeopleComponent {
 
-    constructor(private personService: PersonService) {
+    constructor(private output: Response,
+                private personService: PersonService) {
     }
 
     /**
@@ -85,12 +96,11 @@ export class PeopleComponent {
         path: '', // accessed by GET /people
         produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
-    @Paginated()
-    getPeople(req, res): Person[]  {
+    getPeople(req: Request): void  {
         // get the list of people by params
         this.personService.fetchFromStorage({})
             .subscribe(
-                (people: Person[]) => res.json(people)
+                (people: Person[]) => this.output.respond(people)
             )
     }
 
@@ -103,13 +113,12 @@ export class PeopleComponent {
         consumes: ResourceVersions.PEOPLE_V1 // Accept header
         produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
-    updatePerson(req, res): Person  {
+    updatePerson(req: Request): void  {
         // update person
-        // then... return the person
-        res.json({
-            fName: 'test',
-            lName: 'name'
-        });
+        this.personService.updateUser(req.params.id, req.body)
+            .subscribe(
+                (person: Person) => this.output.respond(person)
+            )
     }
 }
 ```
