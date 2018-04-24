@@ -3,7 +3,7 @@
  */
 import { LitModule } from '../core';
 
-import { AppComponent } from '../app/app.component';
+import { AppComponent } from './app.component';
 import { PeopleModule } from './modules/people/people.module';
 import { PlacesModule } from './modules/places/places.module';
 

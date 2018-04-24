@@ -109,7 +109,7 @@ export class PeopleComponent {
         // update person
         this.personService.update(null, req.body)
             .subscribe(
-                (person: Person) => this.output.respond(person)
+                (person: Person) => res.json(person)
             )
     }
 
@@ -126,7 +126,7 @@ export class PeopleComponent {
         // update person
         this.personService.update(req.params.id, req.body)
             .subscribe(
-                (person: Person) => this.output.respond(person)
+                (person: Person) => res.json(person)
             )
     }
 }
