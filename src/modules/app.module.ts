@@ -3,9 +3,13 @@
  */
 import { LitModule } from '../core';
 
+import { PeopleModule } from './people/people.module';
+
 @LitModule({
     path: '',
-    imports: []
+    imports: [
+        PeopleModule
+    ]
 })
 export class AppModule {
 
