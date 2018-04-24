@@ -42,6 +42,7 @@ export class PeopleModule {
 Components are used as route listeners.
 
 ### Basic Component
+
 ```typescript
 // people.component.ts
 import { LitComponent } from '@litstack/core';
@@ -49,30 +50,22 @@ import { GetMapping, Request, Response } from '@litstack/http';
 
 @LitComponent()
 export class PeopleComponent {
-
-    constructor(private output: Response) {
-    }
-
     /**
-     * @function fetchPeople
+     * @function getPeople
      * @description Return a list of people
      */ 
     @GetMapping() // accessed by GET /people
-    fetchPeople(input: Request): void  {
-        // return an empty array of people
-        this.output.respond({ people: [] });
+    getPeople(req, res): void  {
+        // respond with an empty array of people
+        res.json([]);
     }
 }
 ```
-Calling GET /people would produce:
 
-```json
-{
-    "people": []
-}
-```
+### Target Component
 
-### Realistic Component
+This is not yet a reality, but it is the direction:
+
 ```typescript
 // people.component.ts
 import { LitComponent } from '@litstack/core';
@@ -86,8 +79,7 @@ import { ResourceVersions } from '../common/enums/resource-versions.enum';
 @LitComponent()
 export class PeopleComponent {
 
-    constructor(private output: Response,
-                private personService: PersonService) {
+    constructor(private personService: PersonService) {
     }
 
     /**
@@ -97,11 +89,11 @@ export class PeopleComponent {
     @GetMapping({
         produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
-    getPeople(req: Request): void  {
+    getPeople(req: Request, res: Response): void  {
         // get the list of people by params
-        this.personService.fetchFromStorage({})
+        this.personService.fetchAll({})
             .subscribe(
-                (people: Person[]) => this.output.respond(people)
+                (people: Person[]) => res.json(people)
             )
     }
 
@@ -110,12 +102,12 @@ export class PeopleComponent {
      * @description Create a 'person' record
      */
     @PostMapping({
-        consumes: ResourceVersions.PEOPLE_V1 // Accept header
-        produces: ResourceVersions.PEOPLE_V1 // Content-Type header
+        consumes: ResourceVersions.PERSON_V1 // Accept header
+        produces: ResourceVersions.PERSON_V1 // Content-Type header
     })
-    createPerson(req: Request): void  {
+    createPerson(req: Request, res: Response): void  {
         // update person
-        this.personService.updateUser(null, req.body)
+        this.personService.update(null, req.body)
             .subscribe(
                 (person: Person) => this.output.respond(person)
             )
@@ -127,12 +119,12 @@ export class PeopleComponent {
      */
     @PutMapping({
         path: ':id', // accessed by PUT /people/:id
-        consumes: ResourceVersions.PEOPLE_V1 // Accept header
-        produces: ResourceVersions.PEOPLE_V1 // Content-Type header
+        consumes: ResourceVersions.PERSON_V1 // Accept header
+        produces: ResourceVersions.PERSON_V1 // Content-Type header
     })
-    updatePerson(req: Request): void  {
+    updatePerson(req: Request, res: Response): void  {
         // update person
-        this.personService.updateUser(req.params.id, req.body)
+        this.personService.update(req.params.id, req.body)
             .subscribe(
                 (person: Person) => this.output.respond(person)
             )
