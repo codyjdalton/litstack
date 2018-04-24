@@ -76,7 +76,8 @@ Calling GET /people would produce:
 ```typescript
 // people.component.ts
 import { LitComponent } from '@litstack/core';
-import { GetMapping, PutMapping, PostMapping, Request, Response } from '@litstack/http';
+import { Request, Response } from '@litstack/http';
+import { GetMapping, PutMapping, PostMapping } from '@litstack/http/mappings';
 
 import { Person } from '../../common/models/person.model';
 import { PersonService } from '../../common/services/person.service';
