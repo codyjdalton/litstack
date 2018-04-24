@@ -6,10 +6,10 @@ interface ServiceModuleConfig {
 }
 
 /**
- * @annotation ServiceModule
+ * @annotation LitModule
  * @param {ServiceModuleConfig} config
  */
-export function ServiceModule(config: ServiceModuleConfig): ClassDecorator {
+export function LitModule(config: ServiceModuleConfig): ClassDecorator {
     return (target): any => {
         // add module code here
         return target;
