@@ -15,7 +15,7 @@ export class PeopleComponent {
     }
     
     @GetMapping()
-    getPeople(req: HttpRequest, res: HttpResponse) {
+    getPeople(req: HttpRequest, res: HttpResponse): void {
         this.peopleService.fetch()
             .subscribe(
                 data => res.json(data)
@@ -25,7 +25,7 @@ export class PeopleComponent {
     @GetMapping({
         path: ':id'
     })
-    getPerson(req: HttpRequest, res: HttpResponse) {
+    getPerson(req: HttpRequest, res: HttpResponse): void {
         res.json({
             id: req.params.id,
             message: 'test'
