@@ -3,7 +3,7 @@
  */
 import { LitComponent } from '../../../../lib/core';
 import { HttpRequest, HttpResponse } from '../../../../lib/core/http'
-import { GetMapping } from '../../../../lib/core/http/mappings';
+import { GetMapping, PostMapping } from '../../../../lib/core/http/mappings';
 
 import { PeopleService } from './services/people.service';
 
@@ -28,6 +28,13 @@ export class PeopleComponent {
         res.json({
             id: req.params.id,
             message: 'test'
+        });
+    }
+
+    @PostMapping()
+    createPerson(req: HttpRequest, res: HttpResponse): void {
+        res.json({
+            created: 'message'
         });
     }
 }
