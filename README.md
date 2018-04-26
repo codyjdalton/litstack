@@ -24,8 +24,8 @@ Modules can be declared and packaged with other imports:
 // people.module.ts
 import { LitModule } from '@litstack/core';
 
-import { PeopleComponent } from './components/people/people.component';
-import { PeopleDetailsComponent } from './components/people/people-details.component';
+import { PeopleComponent } from './people.component';
+import { PeopleDetailsComponent } from './components/people-details/people-details.component';
 
 @LitModule({
     path: 'people',
@@ -46,7 +46,8 @@ Components are used as route listeners.
 ```typescript
 // people.component.ts
 import { LitComponent } from '@litstack/core';
-import { GetMapping, Request, Response } from '@litstack/http';
+import { HttpRequest, HttpResponse } from '@litstack/http';
+import { GetMapping } from '@litstack/http/mappings';
 
 @LitComponent()
 export class PeopleComponent {
@@ -55,7 +56,7 @@ export class PeopleComponent {
      * @description Return a list of people
      */ 
     @GetMapping() // accessed by GET /people
-    getPeople(req, res): void  {
+    getPeople(req: HttpRequest, res: HttpResponse): void  {
         // respond with an empty array of people
         res.json([]);
     }
