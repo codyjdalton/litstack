@@ -5,6 +5,9 @@
         "noImplicitAny": false,
         "sourceMap": true,
         "outDir": "dist",
+        "lib": [
+            "es6"
+        ],
         "experimentalDecorators": true
         
     },
