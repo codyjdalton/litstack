@@ -1,5 +1,5 @@
 /**
- * component.decorator
+ * service.decorator
  */
 import { GenericClassDecorator, Type } from "../utils/utils";
 import { Injector } from "./../classes/injector.class";
@@ -9,7 +9,7 @@ import { Injector } from "./../classes/injector.class";
  * @returns {GenericClassDecorator<Type<any>>}
  * @constructor
  */
-export const LitComponent = () : GenericClassDecorator<Type<any>> => {
+export const LitService = () : GenericClassDecorator<Type<any>> => {
   return (target: Type<any>) => {
     Injector.set(target);
   };

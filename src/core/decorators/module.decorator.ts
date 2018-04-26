@@ -9,18 +9,24 @@ interface LitModuleConfig {
     exports?: any[];
 }
 
+import { GenericClassDecorator, Type } from "../utils/utils";
+import { Injector } from "./../classes/injector.class";
+
 /**
- * @Annotation LitModule
- * @param {ServiceModuleConfig} config
+ * Classes decorated with the `@LitModule` decorator are stored within the injector and can be resolved by it.
+ * @returns {GenericClassDecorator<Type<any>>}
+ * @constructor
  */
-export function LitModule(config: LitModuleConfig = null): ClassDecorator {
-    return (target): any => {
-        Object.keys(config).forEach(
-            (key: string) => definePropFactory(
-                target.prototype,
-                key,
-                config[key]
-            )
-        );
-    }
-}
+export const LitModule = (config: LitModuleConfig = null) : GenericClassDecorator<Type<any>> => {
+  return (target: Type<any>) => {
+
+    Object.keys(config).forEach(
+        (key: string) => definePropFactory(
+            target.prototype,
+            key,
+            config[key]
+        )
+    );
+    Injector.set(target);
+  };
+};

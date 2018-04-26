@@ -4,8 +4,13 @@
 import { LitComponent } from '../../../core';
 import { GetMapping } from '../../../core';
 
+import { PeopleService } from './services/people.service';
+
 @LitComponent()
 export class PeopleComponent {
+
+    constructor() {
+    }
     
     @GetMapping()
     getPeople(req, res) {
@@ -17,7 +22,8 @@ export class PeopleComponent {
     })
     getPerson(req, res) {
         res.json({
-            id: 'test'
+            id: req.params.id,
+            message: 'test'
         });
     }
 }
