@@ -3,6 +3,7 @@
  */
 import { LitComponent } from '../../../core';
 import { GetMapping } from '../../../core';
+import { HttpRequest, HttpResponse } from '../../../core/http';
 
 // @TODO implement di
 import { PeopleService } from './services/people.service';
@@ -18,8 +19,7 @@ export class PeopleComponent {
     }
     
     @GetMapping()
-    getPeople(req, res) {
-
+    getPeople(req: HttpRequest, res: HttpResponse) {
         res.json(
             this.peopleService.fetch()
         );
@@ -28,7 +28,7 @@ export class PeopleComponent {
     @GetMapping({
         path: ':id'
     })
-    getPerson(req, res) {
+    getPerson(req: HttpRequest, res: HttpResponse) {
         res.json({
             id: req.params.id,
             message: 'test'
