@@ -5,25 +5,23 @@ import { LitComponent } from '../../../core';
 import { GetMapping } from '../../../core';
 
 // @TODO implement di
-//import { PeopleService } from './services/people.service';
+import { PeopleService } from './services/people.service';
 
 @LitComponent()
 export class PeopleComponent {
 
-    peopleList = [
-        {
-            id: 'test-1',
-            name: 'Test Name'
-        }
-    ];
+    // TODO: implement dependency injection
+    // so the child component doesn't have to take care of this
+    peopleService: PeopleService = new PeopleService()
 
     constructor() {
     }
     
     @GetMapping()
     getPeople(req, res) {
+
         res.json(
-            this.peopleList
+            this.peopleService.fetch()
         );
     }
 
