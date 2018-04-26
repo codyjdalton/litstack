@@ -4,17 +4,27 @@
 import { LitComponent } from '../../../core';
 import { GetMapping } from '../../../core';
 
-import { PeopleService } from './services/people.service';
+// @TODO implement di
+//import { PeopleService } from './services/people.service';
 
 @LitComponent()
 export class PeopleComponent {
+
+    peopleList = [
+        {
+            id: 'test-1',
+            name: 'Test Name'
+        }
+    ];
 
     constructor() {
     }
     
     @GetMapping()
     getPeople(req, res) {
-        res.json([]);
+        res.json(
+            this.peopleList
+        );
     }
 
     @GetMapping({

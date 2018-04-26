@@ -4,8 +4,6 @@ import "reflect-metadata";
 
 import { Injector } from './injector.class';
 
-import { AppComponent } from '../../app/app.component';
-
 class ServiceCompiler {
 
     app: Express;
