@@ -11,9 +11,8 @@ import { PeopleService } from './services/people.service';
 @LitComponent()
 export class PeopleComponent {
 
-    // TODO: implement dependency injection
-    // so the child component doesn't have to take care of this
-    peopleService: PeopleService = new PeopleService();
+    constructor(public peopleService: PeopleService) {
+    }
     
     @GetMapping()
     getPeople(req: HttpRequest, res: HttpResponse) {
