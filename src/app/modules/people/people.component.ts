@@ -13,16 +13,14 @@ export class PeopleComponent {
 
     // TODO: implement dependency injection
     // so the child component doesn't have to take care of this
-    peopleService: PeopleService = new PeopleService()
-
-    constructor() {
-    }
+    peopleService: PeopleService = new PeopleService();
     
     @GetMapping()
     getPeople(req: HttpRequest, res: HttpResponse) {
-        res.json(
-            this.peopleService.fetch()
-        );
+        this.peopleService.fetch()
+            .subscribe(
+                data => res.json(data)
+            );
     }
 
     @GetMapping({
