@@ -1,5 +1,5 @@
 /**
- * Type for what object is instances of
+ * Object instance type
  */
 export interface Type<T> {
   new(...args: any[]): T;

@@ -1,7 +1,7 @@
 /**
  * service.decorator
  */
-import { GenericClassDecorator, Type } from "../utils/utils";
+import { GenericClassDecorator, Type } from "../../utils/core.util";
 import { Injector } from "./../classes/injector.class";
 
 /**

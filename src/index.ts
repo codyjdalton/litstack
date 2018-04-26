@@ -1,7 +1,7 @@
 /**
  * index
  */
-import { serviceCompiler } from './core/classes/service-compiler.class';
+import { serviceCompiler } from '../lib/core/compiler';
 
 import { AppModule } from './app/app.module';
 

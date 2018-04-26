@@ -1,9 +1,10 @@
-
-
+/**
+ * people.service
+ */
 import { of, merge, Observable } from 'rxjs';
 import { mapTo, delay } from 'rxjs/operators';
 
-import { LitService } from '../../../../core';
+import { LitService } from '../../../../../lib/core';
 
 @LitService()
 export class PeopleService {

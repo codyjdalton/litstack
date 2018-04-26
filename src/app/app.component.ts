@@ -1,9 +1,9 @@
 /**
  * app.component
  */
-import { LitComponent } from '../core';
-import { GetMapping } from '../core';
-import { HttpRequest, HttpResponse } from '../core/http';
+import { LitComponent } from '../../lib/core';
+import { HttpRequest, HttpResponse } from '../../lib/core/http';
+import { GetMapping } from '../../lib/core/http/mappings';
 
 @LitComponent()
 export class AppComponent {

@@ -1,15 +1,16 @@
-import { definePropFactory } from '../factories/define-prop.factory';
-import { GenericClassDecorator, Type } from "../utils/utils";
-import { Injector } from "./../classes/injector.class";
+/**
+ * mapping.decorator
+ * Package and class imports
+ */
+import { definePropFactory } from '../../compiler/factories/define-prop.factory';
+import { GenericClassDecorator, Type } from "../../utils/core.util";
+import { Injector } from "../../compiler/classes/injector.class";
+
+import { RequestMapping } from '../models/request-mapping.model';
 
 /**
- * @TODO move this into its own file!
+ * Function declarationg
  */
-interface RequestMapping {
-    path?: string;
-    method?: string;
-}
-
 export const GetMapping = (config: RequestMapping = {}) : MethodDecorator => {
     return (target: Type<any>, propertyKey: string, descriptor: PropertyDescriptor) => {
 
@@ -25,4 +26,4 @@ export const GetMapping = (config: RequestMapping = {}) : MethodDecorator => {
 
       Injector.set(target);
     };
-  };
+};
