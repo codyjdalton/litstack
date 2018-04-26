@@ -2,7 +2,10 @@
 
 ## Vision
 
-This is currently a pseudo-code exercise in designing the type of framework one would want to use for an express web service.
+Using Angular and Spring boot design patterns, the vision is to create a service framework that developers already know how to use, that keeps their code organized and concise, pushing off all the express wiring to the library.
+
+## Getting Started
+
 
 
 ## Bootstrapping
