@@ -27,15 +27,15 @@ import { Response } from '../models/response.model';
 
     /**
      * @function success
-     * @param {object} obj
+     * @param {any} obj
      * 
      * Usage:
-     * res.success({ id: 'some-id' })
+     * res.created({ id: 'some-id' })
      * 
      * Would respond with 201 Created
      * { id: 'some-id' }
      */ 
-    created(obj: Object): void {
+    created(obj: any): void {
         this.rawRes.status(201).json(obj);
     }
  }
