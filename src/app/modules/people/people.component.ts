@@ -17,7 +17,7 @@ export class PeopleComponent {
     getPeople(req: HttpRequest, res: HttpResponse): void {
         this.peopleService.fetch()
             .subscribe(
-                data => res.json(data)
+                data => res.success(data)
             );
     }
 
@@ -25,7 +25,7 @@ export class PeopleComponent {
         path: ':id'
     })
     getPerson(req: HttpRequest, res: HttpResponse): void {
-        res.json({
+        res.success({
             id: req.params.id,
             message: 'test'
         });
@@ -33,7 +33,7 @@ export class PeopleComponent {
 
     @PostMapping()
     createPerson(req: HttpRequest, res: HttpResponse): void {
-        res.json({
+        res.success({
             created: 'message'
         });
     }
