@@ -6,7 +6,14 @@ Using Angular and Spring boot design patterns, the vision is to create a service
 
 ## Getting Started
 
+1. Download or clone this repo
+2. At the project root install NPM dependencies
 
+    $ npm install
+
+3. Run the application
+
+    $ npm start
 
 ## Bootstrapping
 First, we will need to bootstrap our app module at the index level.
@@ -66,9 +73,9 @@ export class PeopleComponent {
 }
 ```
 
-### Target Component
+### Realistic Component
 
-This is not yet a reality, but it is the direction:
+This is not yet fully a reality, but it is the direction:
 
 ```typescript
 // people.component.ts
@@ -93,7 +100,7 @@ export class PeopleComponent {
     @GetMapping({
         produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
-    getPeople(req: Request, res: Response): void  {
+    getPeople(req: HttpRequest, res: HttpResponse): void  {
         // get the list of people by params
         this.personService.fetchAll({})
             .subscribe(
@@ -109,7 +116,7 @@ export class PeopleComponent {
         consumes: ResourceVersions.PERSON_V1 // Accept header
         produces: ResourceVersions.PERSON_V1 // Content-Type header
     })
-    createPerson(req: Request, res: Response): void  {
+    createPerson(req: HttpRequest, res: HttpResponse): void  {
         // update person
         this.personService.update(null, req.body)
             .subscribe(
@@ -126,7 +133,7 @@ export class PeopleComponent {
         consumes: ResourceVersions.PERSON_V1 // Accept header
         produces: ResourceVersions.PERSON_V1 // Content-Type header
     })
-    updatePerson(req: Request, res: Response): void  {
+    updatePerson(req: HttpRequest, res: HttpResponse): void  {
         // update person
         this.personService.update(req.params.id, req.body)
             .subscribe(
