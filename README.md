@@ -8,13 +8,13 @@ Using Angular and Spring boot design patterns, the vision is to create a service
 
 1. Download or clone this repo
 2. At the project root install NPM dependencies
-
+~~~
     $ npm install
-
+~~~
 3. Run the application
-
+~~~
     $ npm start
-
+~~~
 ## Bootstrapping
 First, we will need to bootstrap our app module at the index level.
 
@@ -80,7 +80,7 @@ This is not yet fully a reality, but it is the direction:
 ```typescript
 // people.component.ts
 import { LitComponent } from '@litstack/core';
-import { Request, Response } from '@litstack/http';
+import { HttpRequest, HttpResponse } from '@litstack/http';
 import { GetMapping, PutMapping, PostMapping } from '@litstack/http/mappings';
 
 import { Person } from '../../common/models/person.model';
