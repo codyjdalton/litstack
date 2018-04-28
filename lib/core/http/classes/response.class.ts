@@ -13,7 +13,7 @@ import { Response } from '../models/response.model';
 
     /**
      * @function success
-     * @param {object} obj
+     * @param {any} obj
      * 
      * Usage:
      * res.success({ id: 'some-id' })
@@ -21,7 +21,7 @@ import { Response } from '../models/response.model';
      * Would respond with 200 OK
      * { id: 'some-id' }
      */ 
-    success(obj: Object): void {
+    success(obj: any): void {
         this.rawRes.status(200).json(obj);
     }
 
