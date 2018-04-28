@@ -10,7 +10,7 @@ export class AppComponent {
     
     @GetMapping()
     home(req: HttpRequest, res: HttpResponse) {
-        res.json({
+        res.success({
             message: 'Hello world!'
         });
     }

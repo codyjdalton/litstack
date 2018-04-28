@@ -68,7 +68,7 @@ export class PeopleComponent {
     @GetMapping() // accessed by GET /people
     getPeople(req: HttpRequest, res: HttpResponse): void  {
         // respond with an empty array of people
-        res.json([]);
+        res.success([]);
     }
 }
 ```
@@ -104,7 +104,8 @@ export class PeopleComponent {
         // get the list of people by params
         this.personService.fetchAll({})
             .subscribe(
-                (people: Person[]) => res.json(people)
+                (people: Person[]) => res.success(people),
+                (err) => res.error(401)
             )
     }
 
@@ -120,7 +121,8 @@ export class PeopleComponent {
         // update person
         this.personService.update(null, req.body)
             .subscribe(
-                (person: Person) => res.json(person)
+                (person: Person) => res.created(person),
+                (err) => res.error(404)
             )
     }
 
@@ -137,7 +139,8 @@ export class PeopleComponent {
         // update person
         this.personService.update(req.params.id, req.body)
             .subscribe(
-                (person: Person) => res.json(person)
+                (person: Person) => res.success(person),
+                (err) => res.error(404)
             )
     }
 }

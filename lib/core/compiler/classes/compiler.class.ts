@@ -1,9 +1,10 @@
 import * as express from 'express';
 import { Express } from 'express';
 import * as BodyParser from 'body-parser'; 
-import "reflect-metadata";
+import 'reflect-metadata';
 
 import { Injector } from './injector.class';
+import { HttpResponse } from '../../http/classes/response.class';
 
 class ServiceCompiler {
 
@@ -49,7 +50,7 @@ class ServiceCompiler {
 
     addRoute(method: string, path: string, aComponent: any, name: string): void {
         this.app[method]('/' + path, (req, res) => {
-            aComponent[name](req, res)
+            aComponent[name](req, new HttpResponse(res))
         });
     }
 
