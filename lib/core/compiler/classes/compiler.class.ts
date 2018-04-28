@@ -28,7 +28,9 @@ class ServiceCompiler {
         this.addImportedRoutes(aParent);
 
         // and finally, listen on port 3000
-        this.app.listen(process.env.port || port);
+        this.app.listen(process.env.port || port, () => {
+            console.log("Application running on port " + port);
+        });
     }
 
     addImportedRoutes(Parent: any): void {
