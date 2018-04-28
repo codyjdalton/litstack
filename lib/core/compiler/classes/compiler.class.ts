@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { Express } from 'express';
+import * as BodyParser from 'body-parser'; 
 import "reflect-metadata";
 
 import { Injector } from './injector.class';
@@ -12,6 +13,13 @@ class ServiceCompiler {
 
         // create an express app
         this.app = express();
+
+        // add body parser support
+        // parse application/x-www-form-urlencoded
+        this.app.use(BodyParser.urlencoded({ extended: false }));
+
+        // parse application/json
+        this.app.use(BodyParser.json());
 
         // instantiate the parent module
         const aParent = new Parent();

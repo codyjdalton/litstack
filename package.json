@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@types/reflect-metadata": "^0.1.0",
+    "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "node-typescript-compiler": "^1.1.1",
     "reflect-metadata": "^0.1.12",
