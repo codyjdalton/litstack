@@ -25,13 +25,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codyjdalton/service-starter.git"
+    "url": "git+https://github.com/codyjdalton/litstack.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/codyjdalton/service-starter/issues"
+    "url": "https://github.com/codyjdalton/litstack/issues"
   },
-  "homepage": "https://github.com/codyjdalton/service-starter#readme"
+  "homepage": "https://github.com/codyjdalton/litstack#readme"
 }
