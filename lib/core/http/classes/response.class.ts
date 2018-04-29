@@ -26,7 +26,7 @@ import { Response } from '../models/response.model';
     }
 
     /**
-     * @function success
+     * @function created
      * @param {any} obj
      * 
      * Usage:
@@ -37,5 +37,19 @@ import { Response } from '../models/response.model';
      */ 
     created(obj: any): void {
         this.rawRes.status(201).json(obj);
+    }
+
+    /**
+     * @function errored
+     * @param {any} obj
+     * 
+     * Usage:
+     * res.errored(404, { message: 'The resource was not found on this server' })
+     * 
+     * Would respond with 404 Created
+     * { message: 'The resource was not found on this server' }
+     */ 
+    errored(status: number = 500, messageObj: any = null): void {
+        this.rawRes.status(status).json(messageObj || { message: "An error occurred" });
     }
  }
