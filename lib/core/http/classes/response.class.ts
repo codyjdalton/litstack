@@ -7,6 +7,9 @@
 import { Response } from '../models/response.model';
 
  export class HttpResponse {
+    
+    defaultSuccessCode: number = 200;
+    defaultErrorCode: number = 500;
 
     constructor(private rawRes: Response) {
     }
