@@ -15,6 +15,10 @@ Using Angular and Spring boot design patterns, the vision is to create a service
 ~~~
     $ npm start
 ~~~
+3. Run tests
+~~~
+    $ npm test
+~~~
 ## Bootstrapping
 First, we will need to bootstrap our app module at the index level.
 

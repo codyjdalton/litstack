@@ -20,7 +20,7 @@
     "typescript": "^2.8.3"
   },
   "scripts": {
-    "start": "tsc && node dist/src/index.js",
+    "start": "npm test && tsc && node dist/src/index.js",
     "stop": "killall -KILL node",
     "test": "mocha -r ts-node/register ./**/*.spec.ts"
   },

@@ -8,16 +8,73 @@ describe('Class: HttpResponse', () => {
     let httpResponse: HttpResponse;
 
     beforeEach(() => {
-        httpResponse = new HttpResponse(null);
+
+      // define the class
+      const MockRes = function() {
+          this.statusVal = null;
+          this.jsonVal = null;
+      };
+      
+      MockRes.prototype.json = function(json) {
+          this.jsonVal = json;
+          return this;
+      };
+      
+      MockRes.prototype.status = function(status) {
+          this.statusVal = status;
+          return this;
+      };
+
+      httpResponse = new HttpResponse(new MockRes());
     });
 
-    it('should have a default success code', () => {
+    it('should handle a successful response', () => {
+        
+        const testBody = {
+            message: 'test'
+        };
 
-        expect(httpResponse.defaultSuccessCode).to.haveOwnProperty;
+        httpResponse.success(testBody);
+
+        expect(httpResponse.rawRes['jsonVal']).to.equal(testBody);
+        expect(httpResponse.rawRes['statusVal']).to.equal(200);
     });
 
-    it('should have a default error code', () => {
+    it('should handle a created response', () => {
+      
+      const testBody = {
+          message: 'test'
+      };
 
-        expect(httpResponse.defaultErrorCode).to.haveOwnProperty;
+      httpResponse.created(testBody);
+
+      expect(httpResponse.rawRes['jsonVal']).to.equal(testBody);
+      expect(httpResponse.rawRes['statusVal']).to.equal(201);
+    });
+
+    it('should handle an error with a custom status', () => {
+      
+      const testBody = {
+          message: 'test error'
+      };
+
+      const testStatus: number = 403;
+
+      httpResponse.errored(testStatus, testBody);
+
+      expect(httpResponse.rawRes['jsonVal']).to.equal(testBody);
+      expect(httpResponse.rawRes['statusVal']).to.equal(testStatus);
+    });
+
+    it('should default an error to status 500', () => {
+      
+      const testBody = {
+          message: 'test error'
+      };
+
+      httpResponse.errored(null, testBody);
+
+      expect(httpResponse.rawRes['jsonVal']).to.equal(testBody);
+      expect(httpResponse.rawRes['statusVal']).to.equal(500);
     });
   });

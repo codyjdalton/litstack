@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { GenericClassDecorator, Type } from "../../utils/core.util";
 /**
  * The Injector stores services and resolves requested instances.
