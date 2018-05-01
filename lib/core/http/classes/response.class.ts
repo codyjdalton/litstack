@@ -7,11 +7,8 @@
 import { Response } from '../models/response.model';
 
  export class HttpResponse {
-    
-    defaultSuccessCode: number = 200;
-    defaultErrorCode: number = 500;
 
-    constructor(private rawRes: Response) {
+    constructor(public rawRes: Response) {
     }
 
     /**
@@ -52,7 +49,7 @@ import { Response } from '../models/response.model';
      * Would respond with 404 Created
      * { message: 'The resource was not found on this server' }
      */ 
-    errored(status: number = 500, messageObj: any = null): void {
-        this.rawRes.status(status).json(messageObj || { message: "An error occurred" });
+    errored(status: number, messageObj: any = null): void {
+        this.rawRes.status(status || 500).json(messageObj || { message: "An error occurred" });
     }
  }

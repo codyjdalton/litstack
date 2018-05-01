@@ -1,19 +1,15 @@
 import * as express from 'express';
 import { Express } from 'express';
-import * as BodyParser from 'body-parser'; 
-import 'reflect-metadata';
+import * as BodyParser from 'body-parser';
 
 import { Injector } from './injector.class';
 import { HttpResponse } from '../../http/classes/response.class';
 
-class ServiceCompiler {
+export class ServiceCompiler {
 
-    app: Express;
+    app: Express = express();
     
     bootstrap(Parent: any, port: number = 3000): void {
-
-        // create an express app
-        this.app = express();
 
         // add body parser support
         // parse application/x-www-form-urlencoded
@@ -85,7 +81,7 @@ class ServiceCompiler {
     }
 
     hasMethod (obj, name) {
-        const desc = Object.getOwnPropertyDescriptor (obj, name);
+        const desc = Object.getOwnPropertyDescriptor(obj, name);
         return !!desc && typeof desc.value === 'function';
     }
 
@@ -107,4 +103,4 @@ class ServiceCompiler {
       }
 }
 
-export const serviceCompiler: ServiceCompiler = new ServiceCompiler();
+export const LitCompiler: ServiceCompiler = new ServiceCompiler();
