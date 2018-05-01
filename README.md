@@ -24,7 +24,7 @@ First, we will need to bootstrap our app module at the index level.
 
 ```javascript
 // index.ts
-import { serviceCompiler } from '@litstack/core';
+import { LitCompiler } from '@litstack/core';
 
 import { AppModule } from './modules/app.module';
 
