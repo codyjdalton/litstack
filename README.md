@@ -28,7 +28,7 @@ import { serviceCompiler } from '@litstack/core';
 
 import { AppModule } from './modules/app.module';
 
-serviceCompiler().bootstrapModule(AppModule);
+LitCompiler.bootstrap(AppModule);
 ```
 
 ## Modules
