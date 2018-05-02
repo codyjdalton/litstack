@@ -2,26 +2,185 @@ import * as express from 'express';
 import { expect } from 'chai';
 import 'mocha';
 
-import { ServiceCompiler } from './compiler.class';
+import { definePropFactory } from '../factories/define-prop.factory';
+import { GetMapping } from '../../http/mappings';
 import { Injector } from './injector.class';
+import { LitModule } from '../..';
+import { ServiceCompiler } from './compiler.class';
 
 describe('Class: Compiler', () => {
-
-    class TestComponent {
-
-        // @Mapping() is not needed here as the
-        // compiler already has this metadata
-        query(req, res) {}
-    }
 
     let compiler: ServiceCompiler;
 
     beforeEach(() => {
         
-        compiler = new ServiceCompiler();
-    }); 
+        compiler = Injector.resolve(ServiceCompiler);
+    });
 
-    it('should add component routes to the app', () => {
+    it('should instantiate a new app on construct', () => {
+        expect(compiler.app).is.not.undefined;
+    });
+
+    it('should start the application and listen on the environment port', () => {
+        
+        class TestModule {}
+
+        let succeeded: boolean = false;
+        const port: number = 4500;
+
+        process.env.port = String(port);
+
+        // override the app listen method
+        compiler.app.listen = (a, b): any => {
+            if(a == port) {
+                succeeded = true;
+            }
+        };
+        compiler.addExports = (aModule) => {};
+
+        compiler.bootstrap(TestModule);
+
+        expect(succeeded).to.be.true;
+
+        delete process.env.port;
+    });
+
+    it('should start the application and listen on the default port', () => {
+        
+        class TestModule {}
+
+        let succeeded: boolean = false;
+        const port: number = 3000;
+
+        // override the app listen method
+        compiler.app.listen = (a, b): any => {
+            if(a === port) {
+                succeeded = true;
+            }
+        };
+        compiler.addExports = (aModule) => {};
+
+        compiler.bootstrap(TestModule);
+
+        expect(succeeded).to.be.true;
+    });
+
+    it('should start the application and listen on the input port', () => {
+        
+        class TestModule {}
+
+        let succeeded: boolean = false;
+        const port: number = 1000;
+
+        // override the app listen method
+        compiler.app.listen = (a, b): any => {
+            if(a === port) {
+                succeeded = true;
+            }
+        };
+        compiler.addExports = (aModule) => {};
+
+
+        compiler.bootstrap(TestModule, port);
+
+        expect(succeeded).to.be.true;
+    });
+
+    it('should add imported routes from the parent module', () => {
+        
+        class TestModule {}
+
+        let succeeded: boolean = false;
+
+        // override the addImportedRoutes method
+        compiler.addExports = (aModule) => {
+            if(aModule instanceof TestModule) {
+                succeeded = true;
+            }
+        };
+
+        // override the app listen method
+        compiler.app.listen = (a, b): any => { return;};
+
+        compiler.bootstrap(TestModule);
+
+        expect(succeeded).to.be.true;
+    });
+
+    it('should add module exports and dependencies', () => {
+
+        class ItemsComponent {
+            val = 'test';
+        }
+
+        class DetailsComponent {
+            val = 'another-test';
+        }
+
+        @LitModule({
+            path: 'details',
+            exports: [
+                DetailsComponent
+            ]
+        })
+        class DetailsModule {}
+
+        @LitModule({
+            path: 'items',
+            exports: [
+                ItemsComponent
+            ],
+            imports: [
+                DetailsModule
+            ]
+        })
+        class ItemsModule {}
+
+        const addedExports = [];
+        const expectedExports = [
+            {
+              path: "items",
+              includes: [
+                "test"
+              ]
+            },
+            {
+              path: "details",
+              includes: [
+                "another-test"
+              ]
+            }
+        ];
+
+        // mock add exported components
+        compiler.addExportedComponents = (path: string, includes: any[]) => {
+            addedExports.push({
+                path: path,
+                includes: includes.map(
+                    component => {
+                        return Injector.resolve(component)['val'];
+                    }
+                )
+            });
+        };
+
+        compiler.addExports(Injector.resolve(ItemsModule));
+
+        expect(
+            JSON.stringify(addedExports)
+        ).to.equal(
+            JSON.stringify(expectedExports)
+        );
+    });
+
+    it('should add routes to the app', () => {
+
+        class TestComponent {
+
+            // @Mapping() is not needed here as the
+            // compiler already has this metadata
+            query(req, res) {}
+        }
 
         const testRoutes: { path: string, method: string }[] = [
             {
@@ -63,7 +222,7 @@ describe('Class: Compiler', () => {
                 compiler.addRoute(
                     method,
                     path,
-                    new TestComponent(),
+                    Injector.resolve(TestComponent),
                     'query'
                 );
         
@@ -87,6 +246,52 @@ describe('Class: Compiler', () => {
         );
     });
 
+    it('should register component methods as routes', () => {
+
+        class TestComponent {
+
+            @GetMapping()
+            getItems() {}
+        }
+
+        class AnotherTestComponent {
+            
+            @GetMapping({
+                path: ':id/details'
+            })
+            anotherGetItems() {}
+        }
+
+        const addedRoutes: any[] = [];
+        const expectedRoutes: any[] = [
+            { 
+                method: 'get', 
+                path: 'items', 
+                name: 'getItems'
+            },
+            { 
+                method: 'get', 
+                path: 'items/:id/details', 
+                name: 'anotherGetItems'
+            }
+        ];
+
+        // override the add route method
+        compiler.addRoute = (method, path, aComponent, name) => {
+            addedRoutes.push({
+                method: method,
+                path: path,
+                name: name
+            });
+        };
+
+        compiler.addExportedComponents('items', [
+            TestComponent, AnotherTestComponent
+        ]);
+
+        expect(JSON.stringify(addedRoutes)).to.equal(JSON.stringify(expectedRoutes));
+    });
+
     it('should return whether a method exists on a class', () => {
 
         class TestClass {
@@ -97,7 +302,7 @@ describe('Class: Compiler', () => {
         }
 
         // get a new instance of the test class
-        const aTestClass: TestClass = new TestClass();
+        const aTestClass: TestClass = Injector.resolve(TestClass);
 
         // it shouldn't have 'someOtherMethod' (false positive)
         expect(compiler.hasMethod(
@@ -122,7 +327,7 @@ describe('Class: Compiler', () => {
         }
 
         // get a new instance of the test class
-        const aTestClass: TestClass = new TestClass();
+        const aTestClass: TestClass = Injector.resolve(TestClass);
         const methods: string[] = compiler.getInstanceMethodNames(
             aTestClass
         );
