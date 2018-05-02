@@ -18,10 +18,9 @@ export class ServiceCompiler {
         // parse application/json
         this.app.use(BodyParser.json());
 
-        // instantiate the parent module
-        const aParent = new Parent();
-
-        this.addImportedRoutes(aParent);
+        this.addExports(
+            Injector.resolve(Parent)
+        );
 
         // and finally, listen on port 3000
         this.app.listen(process.env.port || port, () => {
@@ -29,7 +28,7 @@ export class ServiceCompiler {
         });
     }
 
-    addImportedRoutes(Parent: any): void {
+    addExports(Parent: any): void {
         
         const path = Parent.path || '';
         const imports = Parent.imports || [];
@@ -52,8 +51,8 @@ export class ServiceCompiler {
         });
     }
 
-    addExportedComponents(path, exports: any[]): void {
-        exports.forEach(
+    addExportedComponents(path: string, includes: any[]): void {
+        includes.forEach(
             (Component) => {
                 
                 const aComponent: any = Injector.resolve(Component);
@@ -68,6 +67,7 @@ export class ServiceCompiler {
 
                             let newPath = path;
 
+                            // @TODO, build this path more intelligently...
                             if(aComponent[method].path) {
                                 newPath = newPath + '/' + aComponent[method].path;
                             }
@@ -103,4 +103,4 @@ export class ServiceCompiler {
       }
 }
 
-export const LitCompiler: ServiceCompiler = new ServiceCompiler();
+export const LitCompiler: ServiceCompiler = Injector.resolve(ServiceCompiler);
