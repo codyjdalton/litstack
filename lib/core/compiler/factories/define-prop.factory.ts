@@ -5,7 +5,7 @@
  * @param val 
  */
 export function definePropFactory(prototype: Object, key: string, val: any): void {
-    if(val) {
+    if(val !== undefined) {
         Object.defineProperty(prototype, key, {
             value: val
         });

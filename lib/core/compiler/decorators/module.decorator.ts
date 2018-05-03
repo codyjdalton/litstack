@@ -17,7 +17,9 @@ import { Injector } from "./../classes/injector.class";
  * @returns {GenericClassDecorator<Type<any>>}
  * @constructor
  */
-export const LitModule = (config: LitModuleConfig = null) : GenericClassDecorator<Type<any>> => {
+export const LitModule = (config: LitModuleConfig = { path: '', 
+                                                      exports: [], 
+                                                      imports: [] }) : GenericClassDecorator<Type<any>> => {
   return (target: Type<any>) => {
 
     Object.keys(config).forEach(

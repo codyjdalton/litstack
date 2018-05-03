@@ -66,6 +66,14 @@ describe('Class: HttpResponse', () => {
       expect(httpResponse.rawRes['statusVal']).to.equal(testStatus);
     });
 
+    it('should default an error body to {}', () => {
+
+      httpResponse.errored();
+
+      expect(JSON.stringify(httpResponse.rawRes['jsonVal'])).to.equal(JSON.stringify({}));
+      expect(httpResponse.rawRes['statusVal']).to.equal(500);
+    });
+
     it('should default an error to status 500', () => {
       
       const testBody = {

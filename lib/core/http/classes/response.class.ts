@@ -49,7 +49,7 @@ import { Response } from '../models/response.model';
      * Would respond with 404 Created
      * { message: 'The resource was not found on this server' }
      */ 
-    errored(status: number, messageObj: any = null): void {
-        this.rawRes.status(status || 500).json(messageObj || { message: "An error occurred" });
+    errored(status: number = null, messageObj: any = {}): void {
+        this.rawRes.status(status || 500).json(messageObj);
     }
  }

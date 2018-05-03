@@ -86,6 +86,24 @@ describe('Class: Compiler', () => {
         expect(succeeded).to.be.true;
     });
 
+    it('should start the application and listen on the input port, greeting the user', () => {
+        
+        class TestModule {}
+
+        // override the app listen method
+        compiler.addExports = (aModule) => {};
+        compiler.app.listen = (a, b): any => {
+            
+            // @TODO check that this was called with the greet method?
+            expect(typeof b).to.equal('function');
+        };
+
+        compiler.bootstrap(TestModule);
+
+        // manually call the greet method
+        compiler.greet()();
+    });
+
     it('should add imported routes from the parent module', () => {
         
         class TestModule {}
@@ -118,6 +136,14 @@ describe('Class: Compiler', () => {
         }
 
         @LitModule({
+            path: '',
+            exports: [
+                DetailsComponent
+            ]
+        })
+        class DescriptionsModule {}
+
+        @LitModule({
             path: 'details',
             exports: [
                 DetailsComponent
@@ -131,7 +157,8 @@ describe('Class: Compiler', () => {
                 ItemsComponent
             ],
             imports: [
-                DetailsModule
+                DetailsModule,
+                DescriptionsModule
             ]
         })
         class ItemsModule {}
@@ -146,6 +173,12 @@ describe('Class: Compiler', () => {
             },
             {
               path: "details",
+              includes: [
+                "another-test"
+              ]
+            },
+            {
+              path: "",
               includes: [
                 "another-test"
               ]
@@ -165,6 +198,43 @@ describe('Class: Compiler', () => {
         };
 
         compiler.addExports(Injector.resolve(ItemsModule));
+
+        expect(
+            JSON.stringify(addedExports)
+        ).to.equal(
+            JSON.stringify(expectedExports)
+        );
+    });
+
+    it('should add routes with an empty path and imports if none specified', () => {
+
+        @LitModule()
+        class TestModule {
+
+        }
+
+        const addedExports = [];
+
+        // mock add exported components
+        compiler.addExportedComponents = (path: string, includes: any[]) => {
+            addedExports.push({
+                path: path,
+                includes: includes.map(
+                    component => {
+                        return Injector.resolve(component)['val'];
+                    }
+                )
+            });
+        };
+
+        const expectedExports = [
+            {
+                path: '',
+                includes: []
+            }
+        ];
+
+        compiler.addExports(Injector.resolve(TestModule));
 
         expect(
             JSON.stringify(addedExports)
@@ -218,11 +288,12 @@ describe('Class: Compiler', () => {
 
                 const method = route.method;
                 const path = route.path;
+                const aComponent: TestComponent = Injector.resolve(TestComponent);
 
                 compiler.addRoute(
                     method,
                     path,
-                    Injector.resolve(TestComponent),
+                    aComponent,
                     'query'
                 );
         
@@ -244,6 +315,28 @@ describe('Class: Compiler', () => {
                 expect(compRoute.route.methods[method]).to.be.true;
             }
         );
+    });
+
+    it('should add a handler', () => {
+
+        class TestComponent {
+
+            tested: boolean = false;
+
+            someTest(req, res) {
+                if(req && res) {
+                    this.tested = true;
+                }
+            }
+        }
+
+        const aTestComponent: TestComponent = Injector.resolve(TestComponent);
+
+        expect(aTestComponent.tested).to.be.false;
+
+        compiler.addHandler(aTestComponent, 'someTest')(true, true);
+
+        expect(aTestComponent.tested).to.be.true;
     });
 
     it('should register component methods as routes', () => {
