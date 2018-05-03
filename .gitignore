@@ -1,6 +1,10 @@
 # dependencies
 /node_modules
 
+# reports
+/coverage
+/.nyc_output
+
 # distributions
 /dist
 

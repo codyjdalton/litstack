@@ -1,5 +1,5 @@
 {
-  "name": "@litstack/service-starter",
+  "name": "@litstack/core",
   "version": "0.0.1",
   "description": "## Vision",
   "main": "index.js",
@@ -16,13 +16,42 @@
     "@types/mocha": "^5.2.0",
     "chai": "^4.1.2",
     "mocha": "^5.1.1",
+    "nyc": "^11.7.1",
+    "source-map-support": "^0.5.5",
     "ts-node": "^6.0.2",
     "typescript": "^2.8.3"
   },
+  "nyc": {
+    "include": [
+      "lib/**/*.ts"
+    ],
+    "exclude": [
+      "lib/**/*.spec.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "check-coverage": true,
+    "per-file": true,
+    "lines": 100,
+    "statements": 100,
+    "functions": 100,
+    "branches": 100,
+    "sourceMap": true,
+    "instrument": true
+  },
   "scripts": {
-    "start": "npm test && tsc && node dist/src/index.js",
+    "start": "npm run build && node dist/src/index.js",
+    "build": "npm test && tsc",
     "stop": "killall -KILL node",
-    "test": "mocha -r ts-node/register ./**/*.spec.ts"
+    "test": "nyc mocha"
   },
   "repository": {
     "type": "git",

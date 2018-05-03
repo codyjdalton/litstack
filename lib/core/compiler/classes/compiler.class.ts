@@ -9,7 +9,10 @@ export class ServiceCompiler {
 
     app: Express = express();
     
-    bootstrap(Parent: any, port: number = 3000): void {
+    bootstrap(Parent: any, port: string | number = 3000): void {
+
+        // override port
+        port = process.env.port || port;
 
         // add body parser support
         // parse application/x-www-form-urlencoded
@@ -23,17 +26,21 @@ export class ServiceCompiler {
         );
 
         // and finally, listen on port 3000
-        this.app.listen(process.env.port || port, () => {
+        this.app.listen(port, this.greet(port));
+    }
+
+    greet(port: string | number = ''): Function {
+        return () => {
             console.log("Application running on port " + port);
-        });
+        }
     }
 
     addExports(Parent: any): void {
         
         const path = Parent.path || '';
-        const imports = Parent.imports || [];
+        const imports = Parent.imports;
 
-        this.addExportedComponents(Parent.path || '', Parent.exports);
+        this.addExportedComponents(path, Parent.exports);
 
         imports.forEach((Child: any) => {
             
@@ -46,9 +53,13 @@ export class ServiceCompiler {
     }
 
     addRoute(method: string, path: string, aComponent: any, name: string): void {
-        this.app[method]('/' + path, (req, res) => {
-            aComponent[name](req, new HttpResponse(res))
-        });
+        this.app[method]('/' + path, this.addHandler(aComponent, name));
+    }
+
+    addHandler(aComponent: any, name: string) {
+        return (req: any, res: any) => {
+            aComponent[name](req, new HttpResponse(res));
+        };
     }
 
     addExportedComponents(path: string, includes: any[]): void {
