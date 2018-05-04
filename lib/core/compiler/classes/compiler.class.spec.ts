@@ -100,8 +100,20 @@ describe('Class: Compiler', () => {
 
         compiler.bootstrap(TestModule);
 
+        // mock the console
+        compiler.console = new class {
+
+            logged: string = null;
+
+            log(text: string): void {
+                this.logged = text;
+            }
+        };
+
         // manually call the greet method
         compiler.greet()();
+
+        expect(compiler.console.logged).to.not.be.null;
     });
 
     it('should add imported routes from the parent module', () => {
