@@ -7,6 +7,7 @@ import { HttpResponse } from '../../http/classes/response.class';
 
 export class ServiceCompiler {
 
+    console: any = console;
     app: Express = express();
     
     bootstrap(Parent: any, port: string | number = 3000): void {
@@ -31,7 +32,7 @@ export class ServiceCompiler {
 
     greet(port: string | number = ''): Function {
         return () => {
-            console.log("Application running on port " + port);
+            this.console.log("Application running on port " + port);
         }
     }
 
