@@ -1,4 +1,4 @@
-[![npm version](https://badge.fury.io/js/%40litstack%2Fcore.svg)](https://badge.fury.io/js/%40litstack%2Fcore) [![Build Status](https://travis-ci.org/codyjdalton/litstack.svg?branch=master)](https://travis-ci.org/codyjdalton/litstack) [![Coverage Status](https://coveralls.io/repos/github/codyjdalton/litstack/badge.svg?branch=master)](https://coveralls.io/github/codyjdalton/litstack?branch=master)
+[![Build Status](https://travis-ci.org/codyjdalton/litstack.svg?branch=master)](https://travis-ci.org/codyjdalton/litstack) [![npm version](https://badge.fury.io/js/%40litstack%2Fcore.svg)](https://badge.fury.io/js/%40litstack%2Fcore) [![Coverage Status](https://coveralls.io/repos/github/codyjdalton/litstack/badge.svg?branch=master)](https://coveralls.io/github/codyjdalton/litstack?branch=master)
 
 # Litstack
 
@@ -139,25 +139,6 @@ Now you should be able to run your app:
 ```
 > npm start
 ```
-
-## Application Structure
-
-Something like this is recommended:
-    .
-    ├── ...
-    ├── modules                    
-    │   ├── people
-    │   │   ├── services
-    │   │   │   ├── people.service
-    │   │   │   └── people.service.spec
-    │   │   ├── people.component.spec
-    │   │   └── people.component
-    ├── app.module
-    ├── app.component.spec
-    ├── app.component
-    └── index
-
-Find works for you and your team. Check out the Angular style guide for inspiration.
 
 ### What else?
 
