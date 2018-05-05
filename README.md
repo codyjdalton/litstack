@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/codyjdalton/litstack.svg?branch=master)](https://travis-ci.org/codyjdalton/litstack)
+
 # Litstack
 
 ## Vision
