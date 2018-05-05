@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/codyjdalton/litstack.svg?branch=master)](https://travis-ci.org/codyjdalton/litstack)
+[![Coverage Status](https://coveralls.io/repos/github/codyjdalton/litstack/badge.svg?branch=master)](https://coveralls.io/github/codyjdalton/litstack?branch=master)
 
 # Litstack
 
