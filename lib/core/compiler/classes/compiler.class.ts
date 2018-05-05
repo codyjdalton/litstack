@@ -22,9 +22,7 @@ export class ServiceCompiler {
         // parse application/json
         this.app.use(BodyParser.json());
 
-        this.addExports(
-            Injector.resolve(Parent)
-        );
+        this.addExports(Parent);
 
         // and finally, listen on port 3000
         this.app.listen(port, this.greet(port));
@@ -38,23 +36,20 @@ export class ServiceCompiler {
 
     addExports(Parent: any): void {
         
-        const path = Parent.path || '';
-        const imports = Parent.imports;
+        const path = Injector.get(Parent, 'path', '');
+        const imports = Injector.get(Parent, 'imports', []);
 
-        this.addExportedComponents(path, Parent.exports);
+        // add parent imports first
+        this.addExportedComponents(path, Injector.get(Parent, 'exports', []));
 
         imports.forEach((Child: any) => {
-            
-            const aChild: any = Injector.resolve(Child);
 
-            // we are at the child module level...
-            // now we need to add component routes...
-            this.addExportedComponents(aChild.path || '', aChild.exports);
+            // and then register child imports...
+            this.addExportedComponents(
+                Injector.get(Child, 'path', ''),
+                Injector.get(Child, 'exports', [])
+            );
         });
-    }
-
-    addRoute(method: string, path: string, aComponent: any, name: string): void {
-        this.app[method]('/' + path, this.addHandler(aComponent, name));
     }
 
     addHandler(aComponent: any, name: string) {
@@ -63,56 +58,46 @@ export class ServiceCompiler {
         };
     }
 
+    addRoute(method: string, path: string, aComponent: any, name: string): void {
+        this.app[method]('/' + path, this.addHandler(aComponent, name));
+    }
+
+    addRouteFromMethod(Component: any, method: string, path: string) {
+
+        // get a new instance of the component
+        const aComponent: any = Injector.resolve(Component);
+        const reqMethod: string = Injector.get(aComponent, 'method', null, method);
+
+        // check if method is elligible for route and add
+        if(reqMethod) {
+
+            let newPath: string = Injector.get(aComponent, 'path', null, method);
+
+            // @TODO, build this path more intelligently...
+            if(newPath) {
+                path = path + '/' + newPath;
+            }
+            
+            this.addRoute(reqMethod, path, aComponent, method);
+        }
+    }
+
     addExportedComponents(path: string, includes: any[]): void {
         includes.forEach(
-            (Component) => {
-                
-                const aComponent: any = Injector.resolve(Component);
-
-                const props: string[] = this.getInstanceMethodNames(aComponent);
-
-                props.forEach(
-                    (method: string) => {
-
-                        // check if method is elligible for route and add
-                        if(aComponent[method].method) {
-
-                            let newPath = path;
-
-                            // @TODO, build this path more intelligently...
-                            if(aComponent[method].path) {
-                                newPath = newPath + '/' + aComponent[method].path;
-                            }
-                            
-                            this.addRoute(aComponent[method].method, newPath, aComponent, method);
-                        }
-                    }
+            (Component: any) => {
+                this.getMethodList(Component).forEach(
+                    (method: string) => this.addRouteFromMethod(Component, method, path)
                 );
             } 
         );
     }
 
-    hasMethod (obj, name) {
-        const desc = Object.getOwnPropertyDescriptor(obj, name);
-        return !!desc && typeof desc.value === 'function';
+    getMethodList(target: any): string[] {
+        return Object.getOwnPropertyNames(target.prototype)
+                     .filter(
+                        (name: string) => name !== 'constructor'
+                     );
     }
-
-    getInstanceMethodNames(obj, stop = null) {
-        let array = [];
-        let proto = Object.getPrototypeOf (obj);
-        while (proto && proto !== stop) {
-          Object.getOwnPropertyNames (proto)
-            .forEach (name => {
-              if (name !== 'constructor') {
-                if (this.hasMethod (proto, name)) {
-                  array.push (name);
-                }
-              }
-            });
-          proto = Object.getPrototypeOf (proto);
-        }
-        return array;
-      }
 }
 
 export const LitCompiler: ServiceCompiler = Injector.resolve(ServiceCompiler);
