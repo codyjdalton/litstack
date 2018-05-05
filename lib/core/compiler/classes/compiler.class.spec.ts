@@ -2,7 +2,6 @@ import * as express from 'express';
 import { expect } from 'chai';
 import 'mocha';
 
-import { definePropFactory } from '../factories/define-prop.factory';
 import { GetMapping } from '../../http/mappings';
 import { Injector } from './injector.class';
 import { LitModule } from '../..';
@@ -122,9 +121,9 @@ describe('Class: Compiler', () => {
 
         let succeeded: boolean = false;
 
-        // override the addImportedRoutes method
+        // override the addExports method
         compiler.addExports = (aModule) => {
-            if(aModule instanceof TestModule) {
+            if(aModule === TestModule) {
                 succeeded = true;
             }
         };
@@ -209,7 +208,7 @@ describe('Class: Compiler', () => {
             });
         };
 
-        compiler.addExports(Injector.resolve(ItemsModule));
+        compiler.addExports(ItemsModule);
 
         expect(
             JSON.stringify(addedExports)
@@ -253,6 +252,19 @@ describe('Class: Compiler', () => {
         ).to.equal(
             JSON.stringify(expectedExports)
         );
+    });
+
+    it('should add a route with a given method', () => {
+        
+        class TestComponent {
+            
+            query(req, res) {}
+        }
+
+        compiler.addRouteFromMethod(TestComponent, 'query', 'some-path');
+
+        // @TODO what should be tested here? That a component method was
+        // executed, identified, etc?
     });
 
     it('should add routes to the app', () => {
@@ -397,31 +409,6 @@ describe('Class: Compiler', () => {
         expect(JSON.stringify(addedRoutes)).to.equal(JSON.stringify(expectedRoutes));
     });
 
-    it('should return whether a method exists on a class', () => {
-
-        class TestClass {
-
-            someMethod() {
-                // ...
-            }
-        }
-
-        // get a new instance of the test class
-        const aTestClass: TestClass = Injector.resolve(TestClass);
-
-        // it shouldn't have 'someOtherMethod' (false positive)
-        expect(compiler.hasMethod(
-            Object.getPrototypeOf(aTestClass),
-            'someOtherMethod'
-        )).to.equal(false);
-
-        // it should have 'someMethod'
-        expect(compiler.hasMethod(
-            Object.getPrototypeOf(aTestClass),
-            'someMethod'
-        )).to.equal(true);
-    });
-
     it('should return a list of class method names', () => {
 
         class TestClass {
@@ -432,9 +419,8 @@ describe('Class: Compiler', () => {
         }
 
         // get a new instance of the test class
-        const aTestClass: TestClass = Injector.resolve(TestClass);
-        const methods: string[] = compiler.getInstanceMethodNames(
-            aTestClass
+        const methods: string[] = compiler.getMethodList(
+            TestClass
         );
 
         expect(methods[0]).to.equal('someMethod');
