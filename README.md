@@ -140,25 +140,6 @@ Now you should be able to run your app:
 > npm start
 ```
 
-## Application Structure
-
-Something like this is recommended:
-    .
-    ├── ...
-    ├── modules                    
-    │   ├── people
-    │   │   ├── services
-    │   │   │   ├── people.service
-    │   │   │   └── people.service.spec
-    │   │   ├── people.component.spec
-    │   │   └── people.component
-    ├── app.module
-    ├── app.component.spec
-    ├── app.component
-    └── index
-
-Find works for you and your team. Check out the Angular style guide for inspiration.
-
 ### What else?
 
 You can't quite do everything below, but you can do *most* of what is shown below.
