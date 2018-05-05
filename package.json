@@ -36,7 +36,8 @@
     ],
     "reporter": [
       "text-summary",
-      "html"
+      "html",
+      "lcov"
     ],
     "check-coverage": true,
     "per-file": true,
