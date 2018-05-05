@@ -1,35 +1,30 @@
-[![Build Status](https://travis-ci.org/codyjdalton/litstack.svg?branch=master)](https://travis-ci.org/codyjdalton/litstack)
-[![Coverage Status](https://coveralls.io/repos/github/codyjdalton/litstack/badge.svg?branch=master)](https://coveralls.io/github/codyjdalton/litstack?branch=master)
+[![npm version](https://badge.fury.io/js/%40litstack%2Fcore.svg)](https://badge.fury.io/js/%40litstack%2Fcore) [![Build Status](https://travis-ci.org/codyjdalton/litstack.svg?branch=master)](https://travis-ci.org/codyjdalton/litstack) [![Coverage Status](https://coveralls.io/repos/github/codyjdalton/litstack/badge.svg?branch=master)](https://coveralls.io/github/codyjdalton/litstack?branch=master)
 
 # Litstack
 
 ## Vision
 
-Using Angular and Spring boot design patterns, the vision is to create a service framework that developers already know how to use, that keeps their code organized and concise, pushing off all the express wiring to the library.
+Using Angular and Spring boot design patterns, create a Typescript REST framework that developers already know how to use, keeping their code organized and concise, and pushing off all the express wiring to the library.
 
 ## Getting Started
 
-1. Download or clone this repo
-2. At the project root install NPM dependencies
-~~~
-    $ npm install
-~~~
-3. Run the application
-~~~
-    $ npm start
-~~~
-3. Run tests
-~~~
-    $ npm test
-~~~
+Create a project and install the Litstack core library:
+
+```
+> mkdir my-project
+> cd my-project
+> npm init -y
+> npm install @litstack/core
+```
+
 ## Bootstrapping
 First, we will need to bootstrap our app module at the index level.
 
-```javascript
-// index.ts
+```typescript
+// in index.ts
 import { LitCompiler } from '@litstack/core';
 
-import { AppModule } from './modules/app.module';
+import { AppModule } from './app.module';
 
 LitCompiler.bootstrap(AppModule);
 ```
@@ -37,21 +32,19 @@ LitCompiler.bootstrap(AppModule);
 ## Modules
 Modules can be declared and packaged with other imports:
 
-```javascript
-// people.module.ts
+```typescript
+// in app.module.ts
 import { LitModule } from '@litstack/core';
 
-import { PeopleComponent } from './people.component';
-import { PeopleDetailsComponent } from './components/people-details/people-details.component';
+import { AppComponent } from './app.component';
 
 @LitModule({
-    path: 'people',
+    path: '', // this could be 'api' or something
     exports: [
-        PeopleComponent,
-        PeopleDetailsComponent
+        AppComponent
     ]
 })
-export class PeopleModule {
+export class AppModule {
 }
 ```
 
@@ -61,35 +54,122 @@ Components are used as route listeners.
 ### Basic Component
 
 ```typescript
-// people.component.ts
+// in app.component
 import { LitComponent } from '@litstack/core';
-import { HttpRequest, HttpResponse } from '@litstack/http';
-import { GetMapping } from '@litstack/http/mappings';
+import { HttpRequest, HttpResponse } from '@litstack/core/http';
+import { GetMapping } from '@litstack/core/http/mappings';
+
+import { HelloService } from './services/hello.service';
 
 @LitComponent()
-export class PeopleComponent {
+export class AppComponent {
+
+    constructor(private helloService: HelloService) {
+    }
+
     /**
-     * @function getPeople
-     * @description Return a list of people
+     * @function sayHello
+     * @description return a success response with a message
      */ 
-    @GetMapping() // accessed by GET /people
-    getPeople(req: HttpRequest, res: HttpResponse): void  {
+    @GetMapping() // accessed by GET /
+    sayHello(req: HttpRequest, res: HttpResponse): void  {
         // respond with an empty array of people
-        res.success([]);
+        res.success({
+            message: this.helloService.message
+        });
     }
 }
 ```
 
-### Realistic Component
+### Basic Service
 
-This is not yet fully a reality, but it is the direction:
+```typescript
+// in services/hello.service
+import { LitService } from '@litstack/core';
+
+@LitService()
+export class HelloService {
+
+    private messageText = 'Hello world!';
+    
+    get message(): string {
+        return this.messageText;
+    }
+}
+```
+
+## Building the app
+
+Your build process can be customized to your needs, but a minimum configuration could look
+like this:
+
+```
+> npm install ts-node -D
+```
+
+And then in your package.json "scripts" change your start script to this: 
+
+```
+"start": "tsc && node dist/index.js"
+```
+
+You'll also need a tsconfig.json.
+
+```json
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "outDir": "dist",
+        "lib": [
+            "es6"
+        ],
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+        
+    },
+    "include": [
+        "**/*.ts"
+    ]
+}
+```
+
+Now you should be able to run your app:
+
+```
+> npm start
+```
+
+## Application Structure
+
+Something like this is recommended:
+    .
+    ├── ...
+    ├── modules                    
+    │   ├── people
+    │   │   ├── services
+    │   │   │   ├── people.service
+    │   │   │   └── people.service.spec
+    │   │   ├── people.component.spec
+    │   │   └── people.component
+    ├── app.module
+    ├── app.component.spec
+    ├── app.component
+    └── index
+
+Find works for you and your team. Check out the Angular style guide for inspiration.
+
+### What else?
+
+You can't quite do everything below, but you can do *most* of what is shown below.
 
 ```typescript
 // people.component.ts
 import { LitComponent } from '@litstack/core';
-import { HttpRequest, HttpResponse } from '@litstack/http';
-import { GetMapping, PutMapping, PostMapping } from '@litstack/http/mappings';
-
+import { HttpRequest, HttpResponse } from '@litstack/core/http';
+import { GetMapping,
+         PutMapping,
+         PostMapping } from '@litstack/core/http/mappings';
 import { Person } from '../../common/models/person.model';
 import { PersonService } from '../../common/services/person.service';
 import { ResourceVersions } from '../common/enums/resource-versions.enum';

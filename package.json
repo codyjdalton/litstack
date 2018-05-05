@@ -1,10 +1,10 @@
 {
   "name": "@litstack/core",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "## Vision",
   "main": "index.js",
   "dependencies": {
-    "@types/reflect-metadata": "^0.1.0",
+    "@types/node": "^10.0.4",
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "reflect-metadata": "^0.1.12",
@@ -24,10 +24,10 @@
   },
   "nyc": {
     "include": [
-      "lib/**/*.ts"
+      "**/*.ts"
     ],
     "exclude": [
-      "lib/**/*.spec.ts"
+      "**/*.spec.ts"
     ],
     "extension": [
       ".ts"
@@ -50,7 +50,6 @@
     "instrument": true
   },
   "scripts": {
-    "start": "npm run build && node dist/src/index.js",
     "build": "npm test && tsc",
     "stop": "killall -KILL node",
     "test": "nyc mocha"

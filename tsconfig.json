@@ -18,9 +18,8 @@
         "node_modules",
         "**/*.test.ts",
         "**/*.spec.ts",
-        "**/lib"
     ],
     "include": [
-        "src/**/*.ts"
+        "**/*.ts"
     ]
 }
