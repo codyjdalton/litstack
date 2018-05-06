@@ -8,7 +8,9 @@ Using Angular and Spring boot design patterns, create a Typescript REST framewor
 
 ## Getting Started
 
-Create a project and install the Litstack core library:
+You can clone the [clone the litstack seed](https://github.com/codyjdalton/litstack-seed) and get started right away. Or you can set up a project manually:
+
+1. Create a project and install the Litstack core library:
 
 ```
 > mkdir my-project
@@ -17,14 +19,20 @@ Create a project and install the Litstack core library:
 > npm install @litstack/core
 ```
 
+2. Install required types:
+
+```
+> npm install @types/express -D
+> npm install @types/node -D
+```
+
 ## Bootstrapping
 First, we will need to bootstrap our app module at the index level.
 
 ```typescript
 // in index.ts
-import { LitCompiler } from '@litstack/core';
-
-import { AppModule } from './app.module';
+import { LitCompiler } from '@litstack/core/dist/compiler';
+import { AppModule } from './modules/app.module';
 
 LitCompiler.bootstrap(AppModule);
 ```
@@ -34,8 +42,7 @@ Modules can be declared and packaged with other imports:
 
 ```typescript
 // in app.module.ts
-import { LitModule } from '@litstack/core';
-
+import { LitModule } from '@litstack/core/dist';
 import { AppComponent } from './app.component';
 
 @LitModule({
@@ -55,9 +62,9 @@ Components are used as route listeners.
 
 ```typescript
 // in app.component
-import { LitComponent } from '@litstack/core';
-import { HttpRequest, HttpResponse } from '@litstack/core/http';
-import { GetMapping } from '@litstack/core/http/mappings';
+import { LitComponent } from '@litstack/core/dist';
+import { HttpRequest, HttpResponse } from '@litstack/core/dist/http';
+import { GetMapping } from '@litstack/core/dist/http/mappings';
 
 import { HelloService } from './services/hello.service';
 
@@ -85,7 +92,7 @@ export class AppComponent {
 
 ```typescript
 // in services/hello.service
-import { LitService } from '@litstack/core';
+import { LitService } from '@litstack/core/dist';
 
 @LitService()
 export class HelloService {
