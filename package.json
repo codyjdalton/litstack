@@ -1,9 +1,11 @@
 {
   "name": "@litstack/core",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "## Vision",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "dependencies": {
+    "@types/node": "^10.0.4",
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "reflect-metadata": "^0.1.12",
