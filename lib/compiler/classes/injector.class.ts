@@ -40,4 +40,20 @@ export const Injector = new class {
            Reflect.getMetadata(key, target, propertyKey ? propertyKey : undefined) :
            defaultValue;
   }
+
+  /**
+   * @function getAll
+   * @param target 
+   * @param propertyKey
+   * 
+   * Return all values from a given object
+   */
+  getAll(target: Type<any>, propertyKey: string): Object {
+    return Reflect.getMetadataKeys(target, propertyKey).reduce(
+      (result: Object, key: string): Object => {
+        result[key] = this.get(target, key, undefined, propertyKey)
+        return result;
+      }, {}
+    );
+  }
 };

@@ -54,7 +54,14 @@ export class ServiceCompiler {
 
     addHandler(aComponent: any, name: string) {
         return (req: any, res: any) => {
-            aComponent[name](req, new HttpResponse(res));
+
+            // include metadata to send with response
+            const meta: Object = Injector.getAll(
+                aComponent,
+                name
+            );
+
+            aComponent[name](req, new HttpResponse(res, meta));
         };
     }
 

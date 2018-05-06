@@ -5,10 +5,22 @@
  * http response object.s
  */
 import { Response } from '../models/response.model';
+import { Injector } from '../../compiler/classes/injector.class';
 
  export class HttpResponse {
 
-    constructor(public rawRes: Response) {
+    constructor(public rawRes: any,
+                public meta: any = {}) { 
+    }
+
+    setProduces(): void {
+        if(this.meta.produces) {
+            this.setHeaders('Content-Type', this.meta.produces)
+        }
+    }
+
+    setHeaders(key: string, val: string): void {
+        this.rawRes.set(key, val);
     }
 
     /**
@@ -21,8 +33,12 @@ import { Response } from '../models/response.model';
      * Would respond with 200 OK
      * { id: 'some-id' }
      */ 
-    success(obj: any): void {
-        this.rawRes.status(200).json(obj);
+    success(obj: Object | any[], status: number = 200): void {
+
+        // set the produces header if one exists 
+        this.setProduces();
+
+        this.rawRes.status(status).json(obj);
     }
 
     /**
@@ -35,8 +51,8 @@ import { Response } from '../models/response.model';
      * Would respond with 201 Created
      * { id: 'some-id' }
      */ 
-    created(obj: any): void {
-        this.rawRes.status(201).json(obj);
+    created(obj: Object | any[]): void {
+        this.success(obj, 201);
     }
 
     /**
@@ -49,7 +65,7 @@ import { Response } from '../models/response.model';
      * Would respond with 404 Created
      * { message: 'The resource was not found on this server' }
      */ 
-    errored(status: number = null, messageObj: any = {}): void {
+    errored(status: number = null, messageObj: Object = {}): void {
         this.rawRes.status(status || 500).json(messageObj);
     }
  }
