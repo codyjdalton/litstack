@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import 'mocha';
 
+import { GetMapping } from '../../http/mappings';
 import { Injector } from './injector.class';
 import { LitComponent } from '../decorators/component.decorator';
 import { LitService } from '../decorators/service.decorator';
@@ -82,5 +83,28 @@ describe('Class: Injector', () => {
         }
 
         Injector.set(TestClass, { someProp: 'test' });
+    });
+
+    it('should get all metadata for a method', () => {
+
+        const expectedMetadata: any = {
+            path: 'some-path',
+            produces: 'some-test'
+        };
+
+        @LitComponent()
+        class TestComponent {
+
+            @GetMapping(expectedMetadata)
+            someTest() {
+                
+            }
+        }
+
+        const aTestComponent: any = Injector.resolve(TestComponent);
+        const metadata: any = Injector.getAll(aTestComponent, 'someTest');
+
+        expect(metadata.path).to.equal(expectedMetadata.path);
+        expect(metadata.produces).to.equal(expectedMetadata.produces);
     });
   });

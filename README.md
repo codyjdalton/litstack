@@ -8,9 +8,13 @@ Using Angular and Spring boot design patterns, create a Typescript REST framewor
 
 ## Getting Started
 
-You can clone the [clone the litstack seed](https://github.com/codyjdalton/litstack-seed) and get started right away. Or you can set up a project manually:
+### Option 1: Clone the seed app
 
-1. Create a project and install the Litstack core library:
+You can [clone the litstack seed](https://github.com/codyjdalton/litstack-seed) and get started right away. Or you can set up a project manually.
+
+### Option 2: Start with a blank slate
+
+Create a project and install the Litstack core library.
 
 ```
 > mkdir my-project
@@ -19,15 +23,65 @@ You can clone the [clone the litstack seed](https://github.com/codyjdalton/litst
 > npm install @litstack/core
 ```
 
-2. Install required types:
+Install required types:
 
 ```
 > npm install @types/express -D
 > npm install @types/node -D
 ```
 
+## Components
+Components are used as route listeners.
+
+### Basic Component
+
+Create a basic component at ./app.component.ts
+
+```typescript
+// in app.component
+import { LitComponent } from '@litstack/core';
+import { HttpRequest, HttpResponse } from '@litstack/core/dist/http';
+import { GetMapping } from '@litstack/core/dist/http/mappings';
+
+@LitComponent()
+export class AppComponent {
+    @GetMapping({
+        path: ':id'
+    })
+    sayHello(req: HttpRequest, res: HttpResponse): void  {
+        res.success({
+            message: 'Hello at ' + req.params.id
+        });
+    }
+}
+```
+
+Now we will need to wire our component into a module.
+
+## Modules
+Modules can be declared and packaged with other imports.
+
+Create a module at app.module.ts:
+
+```typescript
+// in app.module.ts
+import { LitModule } from '@litstack/core';
+
+import { AppComponent } from './app.component';
+
+@LitModule({
+    path: '', // this could be 'hello' or something
+    exports: [ // and your route would be /hello/some-path
+        AppComponent // this is our app.component we created
+    ]
+})
+export class AppModule {
+}
+```
+
 ## Bootstrapping
-First, we will need to bootstrap our app module at the index level.
+
+Bootstrap your app.module at the index level.
 
 ```typescript
 // in index.ts
@@ -37,70 +91,50 @@ import { AppModule } from './modules/app.module';
 LitCompiler.bootstrap(AppModule);
 ```
 
-## Modules
-Modules can be declared and packaged with other imports:
+### Basic Service
+
+We can inject service into components. First create a service at hello.service.ts:
 
 ```typescript
-// in app.module.ts
-import { LitModule } from '@litstack/core/dist';
-import { AppComponent } from './app.component';
+import { LitService } from '@litstack/core';
 
-@LitModule({
-    path: '', // this could be 'api' or something
-    exports: [
-        AppComponent
-    ]
-})
-export class AppModule {
+@LitService()
+export class HelloService {
+    
+    getMessage(id: string) {
+        return {
+            message: 'Hello at ' + id
+        };
+    }
 }
 ```
 
-## Components
-Components are used as route listeners.
-
-### Basic Component
+You can include your service in app component:
 
 ```typescript
 // in app.component
-import { LitComponent } from '@litstack/core/dist';
+import { LitComponent } from '@litstack/core';
 import { HttpRequest, HttpResponse } from '@litstack/core/dist/http';
 import { GetMapping } from '@litstack/core/dist/http/mappings';
 
-import { HelloService } from './services/hello.service';
+import { HelloService } from './hello.service';
 
 @LitComponent()
 export class AppComponent {
 
     constructor(private helloService: HelloService) {
     }
-
     /**
      * @function sayHello
      * @description return a success response with a message
      */ 
-    @GetMapping() // accessed by GET /
+    @GetMapping({
+        path: ':id'
+    })
     sayHello(req: HttpRequest, res: HttpResponse): void  {
-        // respond with an empty array of people
         res.success({
-            message: this.helloService.message
+            message: this.helloService.getMessage(req.params.id)
         });
-    }
-}
-```
-
-### Basic Service
-
-```typescript
-// in services/hello.service
-import { LitService } from '@litstack/core/dist';
-
-@LitService()
-export class HelloService {
-
-    private messageText = 'Hello world!';
-    
-    get message(): string {
-        return this.messageText;
     }
 }
 ```
@@ -149,15 +183,19 @@ Now you should be able to run your app:
 
 ### What else?
 
-You can't quite do everything below, but you can do *most* of what is shown below.
+So what does a full blown component look like? Check out the example below. Notice the 'produces' param on the get mapping. That will add a 'Content-Type' header to the response.
 
 ```typescript
 // people.component.ts
+
+// listack imports:
 import { LitComponent } from '@litstack/core';
-import { HttpRequest, HttpResponse } from '@litstack/core/http';
+import { HttpRequest, HttpResponse } from '@litstack/core/dist/http';
 import { GetMapping,
          PutMapping,
-         PostMapping } from '@litstack/core/http/mappings';
+         PostMapping } from '@litstack/core/dist/http/mappings';
+
+// custom imports:
 import { Person } from '../../common/models/person.model';
 import { PersonService } from '../../common/services/person.service';
 import { ResourceVersions } from '../common/enums/resource-versions.enum';
@@ -189,7 +227,6 @@ export class PeopleComponent {
      * @description Create a 'person' record
      */
     @PostMapping({
-        consumes: ResourceVersions.PERSON_V1 // Accept header
         produces: ResourceVersions.PERSON_V1 // Content-Type header
     })
     createPerson(req: HttpRequest, res: HttpResponse): void  {
@@ -207,7 +244,6 @@ export class PeopleComponent {
      */
     @PutMapping({
         path: ':id', // accessed by PUT /people/:id
-        consumes: ResourceVersions.PERSON_V1 // Accept header
         produces: ResourceVersions.PERSON_V1 // Content-Type header
     })
     updatePerson(req: HttpRequest, res: HttpResponse): void  {

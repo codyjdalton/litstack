@@ -363,6 +363,31 @@ describe('Class: Compiler', () => {
         expect(aTestComponent.tested).to.be.true;
     });
 
+    it('should add a handler with metadata', () => {
+
+        const expectedHeader: string = 'some-val';
+        let headerVal: string = null;
+
+        class TestComponent {
+
+            headerVal: string = '';
+
+            @GetMapping({
+                produces: expectedHeader
+            })
+            someTest(req, res) {
+                
+                this.headerVal = res.meta.produces;
+            }
+        }
+
+        const aTestComponent: TestComponent = Injector.resolve(TestComponent);
+
+        compiler.addHandler(aTestComponent, 'someTest')({}, {});
+
+        expect(aTestComponent.headerVal).to.equal(expectedHeader);
+    });
+
     it('should register component methods as routes', () => {
 
         class TestComponent {

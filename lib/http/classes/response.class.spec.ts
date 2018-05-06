@@ -7,25 +7,56 @@ describe('Class: HttpResponse', () => {
 
     let httpResponse: HttpResponse;
 
+    // define the class
+    const MockRes = function() {
+        this.statusVal = null;
+        this.jsonVal = null;
+        this.headers = [];
+    };
+    
+    MockRes.prototype.json = function(json) {
+        this.jsonVal = json;
+        return this;
+    };
+
+    MockRes.prototype.set = function(key, val) {
+        this.headers.push({
+            key: key,
+            value: val
+        });
+        return this;
+    };
+    
+    MockRes.prototype.status = function(status) {
+        this.statusVal = status;
+        return this;
+    };
+
     beforeEach(() => {
-
-      // define the class
-      const MockRes = function() {
-          this.statusVal = null;
-          this.jsonVal = null;
-      };
-      
-      MockRes.prototype.json = function(json) {
-          this.jsonVal = json;
-          return this;
-      };
-      
-      MockRes.prototype.status = function(status) {
-          this.statusVal = status;
-          return this;
-      };
-
       httpResponse = new HttpResponse(new MockRes());
+    });
+
+    it('should set a produces header', () => {
+
+        const testHeaderVal: string = 'test-value';
+        const expectedHeader: { key: string, value: string } = {
+            key: 'Content-Type',
+            value: testHeaderVal
+        };
+
+        httpResponse = new HttpResponse(new MockRes(), {
+            produces: testHeaderVal
+        });
+
+        // sending a success response
+        // should set the produces header
+        httpResponse.success({});
+
+        expect(
+            JSON.stringify(httpResponse.rawRes.headers[0])
+        ).to.equal(
+            JSON.stringify(expectedHeader)
+        );
     });
 
     it('should handle a successful response', () => {
@@ -85,4 +116,4 @@ describe('Class: HttpResponse', () => {
       expect(httpResponse.rawRes['jsonVal']).to.equal(testBody);
       expect(httpResponse.rawRes['statusVal']).to.equal(500);
     });
-  });
+});
