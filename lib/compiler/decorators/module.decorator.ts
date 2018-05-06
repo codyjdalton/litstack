@@ -1,7 +1,7 @@
 /**
  * @TODO move this into its own file!
  */
-interface LitModuleConfig {
+export interface LitModuleConfig {
     path?: string;
     imports?: any[];
     exports?: any[];
