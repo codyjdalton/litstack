@@ -74,4 +74,13 @@ describe('Class: Injector', () => {
 
         expect(aTestComponent.theProp).to.equal('test-val');
     });
+
+    it('should allow setting metadata without a property key', () => {
+
+        class TestClass {
+
+        }
+
+        Injector.set(TestClass, { someProp: 'test' });
+    });
   });

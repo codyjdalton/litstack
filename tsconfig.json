@@ -11,10 +11,11 @@
             "dom"
         ],
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
-        
+        "emitDecoratorMetadata": true,
+        "declaration": true
     },
     "exclude": [
+        "dist",
         "node_modules",
         "**/*.test.ts",
         "**/*.spec.ts",
