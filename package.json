@@ -1,6 +1,6 @@
 {
   "name": "@litstack/core",
-  "version": "0.0.7-rc1",
+  "version": "0.0.7",
   "description": "## Vision",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
