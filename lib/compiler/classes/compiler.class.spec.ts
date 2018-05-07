@@ -17,7 +17,21 @@ describe('Class: Compiler', () => {
     });
 
     it('should instantiate a new app on construct', () => {
+        
         expect(compiler.app).is.not.undefined;
+    });
+
+    it('should listen for incoming requests', () => {
+        
+        class TestModule {
+
+        }
+
+        compiler.bootstrap(TestModule);
+
+        expect(compiler.server).to.not.be.undefined;
+
+        compiler.server.close();
     });
 
     it('should start the application and listen on the environment port', () => {
@@ -102,7 +116,7 @@ describe('Class: Compiler', () => {
         // mock the console
         compiler.console = new class {
 
-            logged: string = null;
+            logged: string | null = null;
 
             log(text: string): void {
                 this.logged = text;
@@ -174,7 +188,7 @@ describe('Class: Compiler', () => {
         })
         class ItemsModule {}
 
-        const addedExports = [];
+        const addedExports: Object[] = [];
         const expectedExports = [
             {
               path: "items",
@@ -224,7 +238,7 @@ describe('Class: Compiler', () => {
 
         }
 
-        const addedExports = [];
+        const addedExports: Object[] = [];
 
         // mock add exported components
         compiler.addExportedComponents = (path: string, includes: any[]) => {
@@ -366,7 +380,7 @@ describe('Class: Compiler', () => {
     it('should add a handler with metadata', () => {
 
         const expectedHeader: string = 'some-val';
-        let headerVal: string = null;
+        let headerVal: string | null = null;
 
         class TestComponent {
 

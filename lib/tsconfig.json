@@ -12,17 +12,6 @@
             "dom"
         ],
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "declaration": true,
-        "strict": true
-    },
-    "exclude": [
-        "dist",
-        "node_modules",
-        "**/*.test.ts",
-        "**/*.spec.ts",
-    ],
-    "include": [
-        "lib/**/*.ts"
-    ]
+        "emitDecoratorMetadata": true
+    }
 }

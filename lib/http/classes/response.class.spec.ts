@@ -8,7 +8,7 @@ describe('Class: HttpResponse', () => {
     let httpResponse: HttpResponse;
 
     // define the class
-    const MockRes = function() {
+    const MockRes = function(this: any) {
         this.statusVal = null;
         this.jsonVal = null;
         this.headers = [];
