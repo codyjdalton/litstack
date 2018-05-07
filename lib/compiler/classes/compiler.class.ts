@@ -9,6 +9,7 @@ export class ServiceCompiler {
 
     console: any = console;
     app: Express = express();
+    server: any;
     
     bootstrap(Parent: any, port: string | number = 3000): void {
 
@@ -25,7 +26,7 @@ export class ServiceCompiler {
         this.addExports(Parent);
 
         // and finally, listen on port 3000
-        this.app.listen(port, this.greet(port));
+        this.server = this.app.listen(port, this.greet(port));
     }
 
     greet(port: string | number = ''): Function {

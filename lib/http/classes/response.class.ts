@@ -65,7 +65,7 @@ import { Injector } from '../../compiler/classes/injector.class';
      * Would respond with 404 Created
      * { message: 'The resource was not found on this server' }
      */ 
-    errored(status: number = null, messageObj: Object = {}): void {
+    errored(status: number | null = null, messageObj: Object = {}): void {
         this.rawRes.status(status || 500).json(messageObj);
     }
  }

@@ -12,7 +12,7 @@ import { RequestMapping } from '../models/request-mapping.model';
  * Create generic request mapping method
  */
  const GenericMapping = (type: 'get' | 'put' | 'post' | 'patch' | 'delete') => {
-    return (config: RequestMapping = {}) : MethodDecorator => {
+    return (config: RequestMapping = {}) : any => {
         return (target: Type<any>, propertyKey: string, descriptor: PropertyDescriptor) => {
     
           config.method = type;

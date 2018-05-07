@@ -23,7 +23,7 @@ export const Injector = new class {
    * Stores a service in the Injector
    * @param {Type<any>} target
    */
-  set(target: Type<any>, config: Object = {}, propertyKey: string = null) {
+  set(target: Type<any>, config: Object = {}, propertyKey: any = null): void {
     Object.keys(config).forEach(
       (key: string) => Reflect.defineMetadata(key, config[key], target, propertyKey ? propertyKey : undefined)
     );
@@ -35,7 +35,7 @@ export const Injector = new class {
    * @param {string} key 
    * @param {any} defaultValue 
    */
-  get(target: Type<any>, key: string, defaultValue: any = null, propertyKey: string = null): any {
+  get(target: Type<any>, key: string, defaultValue: any = null, propertyKey: any = null): any {
     return Reflect.hasMetadata(key, target, propertyKey ? propertyKey : undefined) ?
            Reflect.getMetadata(key, target, propertyKey ? propertyKey : undefined) :
            defaultValue;
