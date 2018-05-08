@@ -2,10 +2,10 @@ import * as express from 'express';
 import { expect } from 'chai';
 import 'mocha';
 
-import { GetMapping } from '../../http/mappings';
+import { GetMapping, PostMapping } from '../../http/mappings';
 import { Injector } from './injector.class';
-import { LitModule } from '../..';
-import { ServiceCompiler } from './compiler.class';
+import { LitModule, LitComponent } from '../..';
+import { ServiceCompiler, LitCompiler } from './compiler.class';
 
 describe('Class: Compiler', () => {
 
@@ -49,7 +49,7 @@ describe('Class: Compiler', () => {
                 succeeded = true;
             }
         };
-        compiler.addExports = (aModule) => {};
+        compiler.unpack = (aModule) => {};
 
         compiler.bootstrap(TestModule);
 
@@ -71,7 +71,7 @@ describe('Class: Compiler', () => {
                 succeeded = true;
             }
         };
-        compiler.addExports = (aModule) => {};
+        compiler.unpack = (aModule) => {};
 
         compiler.bootstrap(TestModule);
 
@@ -91,7 +91,7 @@ describe('Class: Compiler', () => {
                 succeeded = true;
             }
         };
-        compiler.addExports = (aModule) => {};
+        compiler.unpack = (aModule) => {};
 
 
         compiler.bootstrap(TestModule, port);
@@ -104,7 +104,7 @@ describe('Class: Compiler', () => {
         class TestModule {}
 
         // override the app listen method
-        compiler.addExports = (aModule) => {};
+        compiler.unpack = (aModule) => {};
         compiler.app.listen = (a, b): any => {
             
             // @TODO check that this was called with the greet method?
@@ -129,14 +129,27 @@ describe('Class: Compiler', () => {
         expect(compiler.console.logged).to.not.be.null;
     });
 
+    it('should return a correct path given parts', () => {
+
+        expect(
+            compiler.getPath([
+                '',
+                'some',
+                null,
+                'test',
+                'path'
+            ])
+        ).to.equal('some/test/path');
+    });
+
     it('should add imported routes from the parent module', () => {
         
         class TestModule {}
 
         let succeeded: boolean = false;
 
-        // override the addExports method
-        compiler.addExports = (aModule) => {
+        // override the unpack method
+        compiler.unpack = (aModule) => {
             if(aModule === TestModule) {
                 succeeded = true;
             }
@@ -150,84 +163,101 @@ describe('Class: Compiler', () => {
         expect(succeeded).to.be.true;
     });
 
-    it('should add module exports and dependencies', () => {
+    it('should add dependencies', () => {
 
-        class ItemsComponent {
-            val = 'test';
+        @LitComponent()
+        class GrandChildComponent {
+
+            @GetMapping({
+                path: ':grandchild_id'
+            })
+            getGrand(req, res) {
+
+            }
         }
 
-        class DetailsComponent {
-            val = 'another-test';
+        @LitComponent()
+        class ChildComponent {
+            
+            @GetMapping()
+            getChild(req, res) {
+                
+            }
         }
 
         @LitModule({
-            path: '',
+            path: 'grandchildren',
             exports: [
-                DetailsComponent
+                GrandChildComponent
             ]
         })
-        class DescriptionsModule {}
+        class GrandChildModule {
+        }
 
         @LitModule({
-            path: 'details',
-            exports: [
-                DetailsComponent
+            path: 'children',
+            imports: [
+                GrandChildModule
             ]
         })
-        class DetailsModule {}
+        class ChildModule {
+        }
 
         @LitModule({
-            path: 'items',
+            path: 'parents',
+            imports: [
+                ChildModule
+            ],
             exports: [
-                ItemsComponent
+                ChildComponent
+            ]
+        })
+        class ParentModule {
+
+        }
+
+        @LitComponent()
+        class TestComponent {
+
+            @PostMapping()
+            getTest(req, res) {}
+        }
+
+        @LitModule({
+            exports: [
+                TestComponent
             ],
             imports: [
-                DetailsModule,
-                DescriptionsModule
+                ParentModule
             ]
         })
-        class ItemsModule {}
+        class TestModule {
+        }
 
-        const addedExports: Object[] = [];
-        const expectedExports = [
-            {
-              path: "items",
-              includes: [
-                "test"
-              ]
-            },
-            {
-              path: "details",
-              includes: [
-                "another-test"
-              ]
-            },
-            {
-              path: "",
-              includes: [
-                "another-test"
-              ]
-            }
+        const addedRoutes: any[] = [];
+        const expectedRoutes: any[] = [ 
+            { path: '', method: 'post', name: 'getTest' },
+            { path: 'parents', method: 'get', name: 'getChild' },
+            { path: 'parents/children/grandchildren/:grandchild_id',
+              method: 'get',
+              name: 'getGrand' } 
         ];
 
-        // mock add exported components
-        compiler.addExportedComponents = (path: string, includes: any[]) => {
-            addedExports.push({
+        // mock the add route method
+        compiler.addRoute = (method: string, path: string, aComponent: any, name: string): void => {
+            addedRoutes.push({
                 path: path,
-                includes: includes.map(
-                    component => {
-                        return Injector.resolve(component)['val'];
-                    }
-                )
+                method: method,
+                name: name
             });
         };
 
-        compiler.addExports(ItemsModule);
+        compiler.unpack(TestModule);
 
         expect(
-            JSON.stringify(addedExports)
+            JSON.stringify(addedRoutes)
         ).to.equal(
-            JSON.stringify(expectedExports)
+            JSON.stringify(expectedRoutes)
         );
     });
 
@@ -259,7 +289,7 @@ describe('Class: Compiler', () => {
             }
         ];
 
-        compiler.addExports(Injector.resolve(TestModule));
+        compiler.unpack(Injector.resolve(TestModule));
 
         expect(
             JSON.stringify(addedExports)
@@ -372,7 +402,7 @@ describe('Class: Compiler', () => {
 
         expect(aTestComponent.tested).to.be.false;
 
-        compiler.addHandler(aTestComponent, 'someTest')(true, true);
+        compiler.getHandler(aTestComponent, 'someTest')({}, {});
 
         expect(aTestComponent.tested).to.be.true;
     });
@@ -397,7 +427,7 @@ describe('Class: Compiler', () => {
 
         const aTestComponent: TestComponent = Injector.resolve(TestComponent);
 
-        compiler.addHandler(aTestComponent, 'someTest')({}, {});
+        compiler.getHandler(aTestComponent, 'someTest')({}, {});
 
         expect(aTestComponent.headerVal).to.equal(expectedHeader);
     });
