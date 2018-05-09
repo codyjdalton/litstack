@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import 'mocha';
 
 import { Injector } from '../classes/injector.class';
 import { LitModule } from '../..';

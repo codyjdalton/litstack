@@ -7,7 +7,7 @@
 import { Response } from '../models/response.model';
 import { Injector } from '../../compiler/classes/injector.class';
 
- export class HttpResponse {
+export class HttpResponse {
 
     constructor(public rawRes: any,
                 public meta: any = {}) { 
@@ -68,4 +68,4 @@ import { Injector } from '../../compiler/classes/injector.class';
     errored(status: number | null = null, messageObj: Object = {}): void {
         this.rawRes.status(status || 500).json(messageObj);
     }
- }
+}

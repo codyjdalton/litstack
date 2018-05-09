@@ -13,7 +13,7 @@ export const Injector = new class {
    */
   resolve<T>(target: Type<any>): T {
     // tokens are required dependencies, while injections are resolved tokens from the Injector
-    const tokens = Reflect.getMetadata('design:paramtypes', target) || [],
+    const tokens: Type<any>[] = Reflect.getMetadata('design:paramtypes', target) || [],
       injections = tokens.map(token => Injector.resolve<any>(token));
 
     return new target(...injections);

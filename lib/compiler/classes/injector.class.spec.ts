@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import 'mocha';
 
 import { GetMapping } from '../../http/mappings';
 import { Injector } from './injector.class';
