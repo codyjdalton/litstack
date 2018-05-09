@@ -1,21 +1,24 @@
 /**
  * compiler.class
  */
-import * as express from 'express';
-import * as BodyParser from 'body-parser';
+import express = require('express');
+import BodyParser = require('body-parser');
 
-import { Injector } from './injector.class';
+import { Application } from 'express';
+
+import { CoreCompiler, ILitComponent, ILitModule } from '../utils/compiler.utils';
+import { HttpServer } from '../../http/utils/http.utils';
 import { HttpResponse } from '../../http/classes/response.class';
+import { Injector } from './injector.class';
 
-export class ServiceCompiler {
+export class ServiceCompiler extends CoreCompiler {
 
-    console: any = console;
-    app: any = express();
-    server: any;
+    app: Application = express();
+    server: HttpServer;
 
     /**
      * @function bootstrap
-     * @param {LitModule} Parent - Usually the app.module
+     * @param {ILitModule} Parent - Usually the app.module
      * @param {number} port - defaults to 3000
      * 
      * Usage:
@@ -24,7 +27,7 @@ export class ServiceCompiler {
      * 
      * LitCompiler.bootstrap(AppComponent)
      */
-    bootstrap(Parent: any, port: string | number = 3000): void {
+    bootstrap(Parent: ILitModule, port: string | number = 3000): void {
 
         // override port
         port = process.env.port || port;
@@ -58,10 +61,10 @@ export class ServiceCompiler {
 
     /**
      * @function unpack
-     * @param {LitModule} Parent 
+     * @param {GenericModule} Parent 
      * @param {path} inputPath
      */
-    unpack(Parent: any, inputPath: string = ''): void {
+    unpack(Parent: ILitModule, inputPath: string = ''): void {
         
         const path = this.getPath([
             inputPath,
@@ -72,14 +75,14 @@ export class ServiceCompiler {
         // add parent imports first
         this.addExportedComponents(path, Injector.get(Parent, 'exports', []));
 
-        imports.forEach((Child: any) => this.unpack(Child, path));
+        imports.forEach((Child: ILitModule) => this.unpack(Child, path));
     }
 
     /**
      * @function getMethodList
-     * @param {LitComponent} target
+     * @param {ILitComponent} target
      */
-    getMethodList(Component: any): string[] {
+    getMethodList(Component: ILitComponent): string[] {
         return Object.getOwnPropertyNames(Component.prototype)
                      .filter(
                         (name: string) => name !== 'constructor' // <-- maybe someday
@@ -102,10 +105,10 @@ export class ServiceCompiler {
 
     /**
      * @function getHandler
-     * @param {LitComponent} aComponent 
+     * @param {ILitComponent} aComponent 
      * @param {string} name
      */
-    getHandler(aComponent: any, name: string) {
+    getHandler(aComponent: ILitComponent, name: string) {
         return (req: any, res: any) => {
 
             // include metadata to send with response
@@ -132,13 +135,13 @@ export class ServiceCompiler {
      * POST /some/route
      * adds handler aComponent.someMethod
      */
-    addRoute(method: string, path: string, aComponent: any, name: string): void {
+    addRoute(method: string, path: string, aComponent: ILitComponent, name: string): void {
         this.app[method]('/' + path, this.getHandler(aComponent, name));
     }
 
     /**
      * @function addRouteFromMethod
-     * @param {LitComponent} Component 
+     * @param {ILitComponent} Component 
      * @param {string} method 
      * @param {string} path 
      * 
@@ -150,10 +153,10 @@ export class ServiceCompiler {
      * GET /path/to/stuff
      * SomeComponent.getStuff
      */
-    addRouteFromMethod(Component: any, method: string, path: string) {
+    addRouteFromMethod(Component: ILitComponent, method: string, path: string) {
 
         // get a new instance of the component
-        const aComponent: any = Injector.resolve(Component);
+        const aComponent: ILitComponent = Injector.resolve(Component);
         const reqMethod: string = Injector.get(aComponent, 'method', null, method);
 
         // check if method is elligible for route and add
@@ -171,16 +174,16 @@ export class ServiceCompiler {
     /**
      * @function addExportedComponents
      * @param {string} path 
-     * @param {LitComponent[]} includes 
+     * @param {ILitComponent[]} includes 
      * Usage:
      * const moduleExports: LitComponent[] = [ SomeComponent, AnotherComponent ];
      * 
      * // Adds all component routes for each, prefixing the path with 'root'.
      * LitCompiler.addExportedComponents('root', moduleExports);
      */
-    addExportedComponents(path: string, includes: any[]): void {
+    addExportedComponents(path: string, includes: ILitModule[]): void {
         includes.forEach(
-            (Component: any) => {
+            (Component: ILitComponent) => {
                 this.getMethodList(Component).forEach(
                     (method: string) => this.addRouteFromMethod(Component, method, path)
                 );

@@ -1,6 +1,6 @@
-import * as express from 'express';
+import express = require('express');
+
 import { expect } from 'chai';
-import 'mocha';
 
 import { GetMapping, PostMapping } from '../../http/mappings';
 import { Injector } from './injector.class';
@@ -356,7 +356,7 @@ describe('Class: Compiler', () => {
 
                 const method = route.method;
                 const path = route.path;
-                const aComponent: TestComponent = Injector.resolve(TestComponent);
+                const aComponent: any = Injector.resolve(TestComponent);
 
                 compiler.addRoute(
                     method,
@@ -398,7 +398,7 @@ describe('Class: Compiler', () => {
             }
         }
 
-        const aTestComponent: TestComponent = Injector.resolve(TestComponent);
+        const aTestComponent: any = Injector.resolve(TestComponent);
 
         expect(aTestComponent.tested).to.be.false;
 
@@ -425,7 +425,7 @@ describe('Class: Compiler', () => {
             }
         }
 
-        const aTestComponent: TestComponent = Injector.resolve(TestComponent);
+        const aTestComponent: any = Injector.resolve(TestComponent);
 
         compiler.getHandler(aTestComponent, 'someTest')({}, {});
 

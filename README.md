@@ -20,14 +20,8 @@ Create a project and install the Litstack core library.
 > mkdir my-project
 > cd my-project
 > npm init -y
+> npm install typescript -D
 > npm install @litstack/core
-```
-
-Install required types:
-
-```
-> npm install @types/express -D
-> npm install @types/node -D
 ```
 
 ## Components
@@ -35,33 +29,34 @@ Components are used as route listeners.
 
 ### Basic Component
 
-Create a basic component at ./app.component.ts
-
 ```typescript
-// in app.component
+// in app.component.ts
 import { LitComponent } from '@litstack/core';
 import { HttpRequest, HttpResponse } from '@litstack/core/dist/http';
 import { GetMapping } from '@litstack/core/dist/http/mappings';
 
 @LitComponent()
 export class AppComponent {
+
+    private message = 'Hello world!';
+
     @GetMapping({
-        path: ':id'
+        path: '' // GET / is routed to onHello
     })
-    sayHello(req: HttpRequest, res: HttpResponse): void  {
+    onHello(req: HttpRequest, res: HttpResponse): void {
         res.success({
-            message: 'Hello at ' + req.params.id
+            message: this.message
         });
     }
 }
 ```
 
-Now we will need to wire our component into a module.
-
 ## Modules
-Modules can be declared and packaged with other imports.
+Modules can export component routes and package other modules.
 
-Create a module at app.module.ts:
+### Basic Module
+
+This module will export app.component's routes.
 
 ```typescript
 // in app.module.ts
@@ -70,9 +65,35 @@ import { LitModule } from '@litstack/core';
 import { AppComponent } from './app.component';
 
 @LitModule({
-    path: '', // this could be 'hello' or something
-    exports: [ // and your route would be /hello/some-path
-        AppComponent // this is our app.component we created
+    exports: [
+        AppComponent
+    ]
+})
+export class AppModule {
+}
+```
+
+### Module with Imports
+
+Modules can also include imports.
+
+```typescript
+import { LitModule } from '@litstack/core';
+
+import { ItemsModule } from  './modules/items/items.module';
+import { OrdersModule } from  './modules/orders/orders.module';
+import { PeopleModule } from  './modules/people/people.module';
+import { VersionComponent } from  './components/version/version.component';
+
+@LitModule({
+    path: '', // this could be 'your-path' and all packaged routes
+    imports: [  // would be registered at '/your-path/...'
+        ItemsModule,
+        PeopleModule,
+        OrdersModule
+    ],
+    exports: [
+        VersionComponent
     ]
 })
 export class AppModule {
@@ -81,7 +102,7 @@ export class AppModule {
 
 ## Bootstrapping
 
-Bootstrap your app.module at the index level.
+Bootstrap app.module at the index.ts level:
 
 ```typescript
 // in index.ts
@@ -91,11 +112,14 @@ import { AppModule } from './modules/app.module';
 LitCompiler.bootstrap(AppModule);
 ```
 
+## Services
+
 ### Basic Service
 
-We can inject service into components. First create a service at hello.service.ts:
+Services can be defined and injected into components:
 
 ```typescript
+// in hello.service
 import { LitService } from '@litstack/core';
 
 @LitService()
@@ -108,8 +132,6 @@ export class HelloService {
     }
 }
 ```
-
-You can include your service in app component:
 
 ```typescript
 // in app.component
@@ -139,51 +161,9 @@ export class AppComponent {
 }
 ```
 
-## Building the app
+## Full Component Example
 
-Your build process can be customized to your needs, but a minimum configuration could look
-like this:
-
-```
-> npm install ts-node -D
-```
-
-And then in your package.json "scripts" change your start script to this: 
-
-```
-"start": "tsc && node dist/index.js"
-```
-
-You'll also need a tsconfig.json.
-
-```json
-{
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es6",
-        "outDir": "dist",
-        "lib": [
-            "es6"
-        ],
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
-        
-    },
-    "include": [
-        "**/*.ts"
-    ]
-}
-```
-
-Now you should be able to run your app:
-
-```
-> npm start
-```
-
-### What else?
-
-So what does a full blown component look like? Check out the example below. Notice the 'produces' param on the get mapping. That will add a 'Content-Type' header to the response.
+Notice the 'produces' param on the get mapping. That will add a 'Content-Type' header to the response.
 
 ```typescript
 // people.component.ts
@@ -214,8 +194,8 @@ export class PeopleComponent {
         produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
     getPeople(req: HttpRequest, res: HttpResponse): void  {
-        // get the list of people by params
-        this.personService.fetchAll({})
+        // get the list of all people
+        this.personService.fetchAll()
             .subscribe(
                 (people: Person[]) => res.success(people),
                 (err) => res.error(401)
@@ -223,18 +203,19 @@ export class PeopleComponent {
     }
 
     /**
-     * @function createPerson
-     * @description Create a 'person' record
-     */
-    @PostMapping({
-        produces: ResourceVersions.PERSON_V1 // Content-Type header
+     * @function getPerson
+     * @description Return a single person
+     */ 
+    @GetMapping({
+        path: ':id',
+        produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
-    createPerson(req: HttpRequest, res: HttpResponse): void  {
-        // update person
-        this.personService.update(null, req.body)
+    getPerson(req: HttpRequest, res: HttpResponse): void  {
+        // get the list of all people
+        this.personService.fetchById(req.params.id)
             .subscribe(
-                (person: Person) => res.created(person),
-                (err) => res.error(404)
+                (people: Person[]) => res.success(people),
+                (err) => res.error(401)
             )
     }
 
@@ -254,5 +235,72 @@ export class PeopleComponent {
                 (err) => res.error(404)
             )
     }
+
+    /**
+     * @function createPerson
+     * @description Create a 'person' record
+     */
+    @PostMapping({
+        produces: ResourceVersions.PERSON_V1 // Content-Type header
+    })
+    createPerson(req: HttpRequest, res: HttpResponse): void  {
+        // update person
+        this.personService.update(null, req.body)
+            .subscribe(
+                (person: Person) => res.created(person),
+                (err) => res.error(404)
+            )
+    }
 }
 ```
+
+## Building the app
+
+Your build process can be customized to your needs, but a minimum configuration could look like this:
+
+```
+> npm install ts-node -D
+> npm install @types/node -D
+> npm install @types/express -D
+```
+
+Change the following in your package.json:
+
+```json
+{
+  // ..
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsc && node dist/index.js"
+  },
+  // ..
+}
+```
+
+You'll also need a tsconfig.json.
+
+```json
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "outDir": "dist",
+        "lib": [
+            "es7"
+        ],
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    },
+    "include": [
+        "**/*.ts"
+    ]
+}
+```
+
+Now you should be able to run your app:
+
+```
+> npm start
+```
+
+Have fun!
