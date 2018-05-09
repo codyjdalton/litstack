@@ -268,12 +268,10 @@ Change the following in your package.json:
 
 ```json
 {
-  // ..
   "main": "dist/index.js",
   "scripts": {
     "start": "tsc && node dist/index.js"
-  },
-  // ..
+  }
 }
 ```
 
