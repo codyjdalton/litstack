@@ -13,6 +13,7 @@
             "dom"
         ],
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "strict": true
     }
 }
