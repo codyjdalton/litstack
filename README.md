@@ -194,7 +194,6 @@ export class PeopleComponent {
         produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
     getPeople(req: HttpRequest, res: HttpResponse): void  {
-        // get the list of all people
         this.personService.fetchAll()
             .subscribe(
                 (people: Person[]) => res.success(people),
@@ -211,7 +210,6 @@ export class PeopleComponent {
         produces: ResourceVersions.PEOPLE_V1 // Content-Type header
     })
     getPerson(req: HttpRequest, res: HttpResponse): void  {
-        // get the list of all people
         this.personService.fetchById(req.params.id)
             .subscribe(
                 (people: Person[]) => res.success(people),
@@ -228,7 +226,6 @@ export class PeopleComponent {
         produces: ResourceVersions.PERSON_V1 // Content-Type header
     })
     updatePerson(req: HttpRequest, res: HttpResponse): void  {
-        // update person
         this.personService.update(req.params.id, req.body)
             .subscribe(
                 (person: Person) => res.success(person),
