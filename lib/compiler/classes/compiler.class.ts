@@ -36,18 +36,18 @@ export class ServiceCompiler extends CoreCompiler {
         this.unpack(parent);
 
         // 3. start the app
-        this.start(port);
+        this.listen(port);
     }
 
     /**
-     * @function start
+     * @function listen
      * @param {number} port
      * Usage:
-     * Litcompiler.start()
+     * Litcompiler.listen()
      */
-    protected start(port: string | number): void {
+    private listen(port: string | number): void {
 
-        port = process.env.port || port;
+        port = process.env.PORT || port;
 
         this.server = this.app.listen(port, this.greet(port));
     }

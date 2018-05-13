@@ -1,11 +1,18 @@
+/**
+ * compiler.class.spec
+ */
 import express = require('express');
+import request = require('supertest');
 
 import { expect } from 'chai';
+import { of, merge, Observable, Subscription } from 'rxjs';
+import { mapTo, delay } from 'rxjs/operators';
 
 import { GetMapping, PostMapping, PutMapping, PatchMapping, DeleteMapping } from '../../http/mappings';
 import { Injector } from './injector.class';
 import { LitModule, LitComponent } from '../..';
 import { ServiceCompiler, LitCompiler } from './compiler.class';
+import { HttpResponse } from '../../http';
 
 describe('Class: Compiler', () => {
 
@@ -16,28 +23,27 @@ describe('Class: Compiler', () => {
         port: string | number = '';
         meta: string = '';
 
-        constructor() {
-            super();
+        // we don't want to actually log anything
+        // to the console in our spec
+        // so we will mock this.console
+        console = new class {
+            logged: string[] = [];
+            log(text: string): void {
+                // ..
+                this.logged.push(text);
+            }
+        };
 
-            // we don't want to actually log anything
-            // to the console in our spec
-            // so we will mock this.console
-            this.console = new class {
-                log(text: string): void {
-                    // ..
-                    // add these to a queue or something?
-                }
-            };
+        get exchange() {
+            return request(this.app);
+        }
+
+        getPort() {
+            return this.server.address().port;
         }
 
         setMeta(text: string) {
             this.meta = text;
-        }
-
-        skipStart() {
-            this.start = (port: string | number) => {
-                this.port = port;
-            }
         }
         
         closeServer() {
@@ -87,26 +93,36 @@ describe('Class: Compiler', () => {
         }
 
         const testPort = 8080;
-
-        compiler.skipStart();
         
         compiler.bootstrap(TestModule, testPort);
         
-        expect(compiler.port).to.equal(testPort);
+        expect(compiler.getPort()).to.equal(testPort);
     });
 
-    it('should start the application with a greeting', () => {
+    it('should start the application with a greeting', (done) => {
         
         @LitModule()
         class TestModule {
 
         }
 
-        const expectedGreeting: string = 'Application running on port 3000';
+        const testPort: number = 8080;
+        const expectedGreeting: string = 'Application running on port ' + testPort;
         
-        compiler.bootstrap(TestModule, 2000);
+        compiler.bootstrap(TestModule, testPort);
 
-        // @TODO test this functionality....
+        const res = of(null);
+        const emitter: Subscription = merge(
+            res.pipe(mapTo(
+                null
+            ), delay(10))
+        ).subscribe(
+            res =>  {
+                expect(compiler.console.logged[0]).to.equal(expectedGreeting);
+                emitter.unsubscribe();
+                done();
+            }
+        );
     });
 
     it('should add component exports', () => {
@@ -292,5 +308,46 @@ describe('Class: Compiler', () => {
         .to.equal(
             JSON.stringify(expectedRoutes)
         );
+    });
+
+    it('should respond to http requests', function(done) {
+
+        @LitComponent()
+        class TestComponent {
+
+            @GetMapping({
+                path: ':id',
+                produces: 'application/vnd.messages.v1+json'
+            })
+            getItem(req, res: HttpResponse) {
+                res.success({
+                    message: req.params.id
+                });
+            }
+        }
+        
+        @LitModule({
+            path: 'items',
+            exports: [
+                TestComponent
+            ]
+        })
+        class TestModule {}
+
+        const contentType: string = 'application/vnd.messages.v1+json; charset=utf-8';
+
+        compiler.bootstrap(TestModule);
+
+        compiler.exchange
+                .get('/items/123')
+                .expect('Content-Type', contentType)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body.message).to.equal('123');
+                })
+                .end(function(err, res) {
+                    if (err) return done(err);
+                    done();
+                });
     });
   });

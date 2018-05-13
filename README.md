@@ -51,6 +51,40 @@ export class AppComponent {
 }
 ```
 
+### Testing
+
+Test your components [using supertest methods](https://github.com/visionmedia/supertest) and the Litstack TestBed:
+
+```typescript
+describe('AppComponent', () => {
+
+    let component: LitComponentTest;
+
+    beforeEach(() => {
+        
+        component = TestBed.start(AppComponent);
+    });
+
+    afterEach(() => {
+
+        TestBed.stop();
+    });
+
+    it('should return a welcome message', (done) => {
+
+        component.get('/')
+                 .expect(200)
+                 .expect((res) => {
+                   expect(res.body.message).to.equal('Hello World!');
+                 })
+                 .end((err, res) => {
+                    if (err) return done(err);
+                    done();
+                 });
+    });
+});
+```
+
 ## Modules
 Modules can export component routes and package other modules.
 
