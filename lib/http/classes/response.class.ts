@@ -2,15 +2,23 @@
  * response.class
  * 
  * The HTTP response class is a wrapper for the
- * http response object.s
+ * http response object
  */
+
+import express = require('express');
+
 import { Response } from '../models/response.model';
 import { Injector } from '../../compiler/classes/injector.class';
 
+// @TODO MOVE THIS TO ITS OWN FILE!!!!
+export interface metaConfig {
+    produces?: string;
+}
+
 export class HttpResponse {
 
-    constructor(public rawRes: any,
-                public meta: any = {}) { 
+    constructor(public response: express.Response,
+                private meta: metaConfig) { 
     }
 
     setProduces(): void {
@@ -20,7 +28,7 @@ export class HttpResponse {
     }
 
     setHeaders(key: string, val: string): void {
-        this.rawRes.set(key, val);
+        this.response.set(key, val);
     }
 
     /**
@@ -38,7 +46,7 @@ export class HttpResponse {
         // set the produces header if one exists 
         this.setProduces();
 
-        this.rawRes.status(status).json(obj);
+        this.response.status(status).json(obj);
     }
 
     /**
@@ -66,6 +74,6 @@ export class HttpResponse {
      * { message: 'The resource was not found on this server' }
      */ 
     errored(status: number | null = null, messageObj: Object = {}): void {
-        this.rawRes.status(status || 500).json(messageObj);
+        this.response.status(status || 500).json(messageObj);
     }
 }

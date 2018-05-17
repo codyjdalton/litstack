@@ -1,119 +1,104 @@
 import { expect } from 'chai';
-import 'mocha';
 
 import { HttpResponse } from './response.class';
+import { TestBed, LitComponentTest } from '../../testing';
+import { LitComponent } from '../..';
+import { GetMapping } from '../mappings';
+import { HttpRequest } from '..';
 
 describe('Class: HttpResponse', () => {
 
-    let httpResponse: HttpResponse;
+    let component: LitComponentTest;
 
-    // define the class
-    const MockRes = function(this: any) {
-        this.statusVal = null;
-        this.jsonVal = null;
-        this.headers = [];
-    };
-    
-    MockRes.prototype.json = function(json) {
-        this.jsonVal = json;
-        return this;
-    };
+    afterEach(() => {
 
-    MockRes.prototype.set = function(key, val) {
-        this.headers.push({
-            key: key,
-            value: val
-        });
-        return this;
-    };
-    
-    MockRes.prototype.status = function(status) {
-        this.statusVal = status;
-        return this;
-    };
-
-    beforeEach(() => {
-      httpResponse = new HttpResponse(new MockRes());
+        TestBed.stop();
     });
 
-    it('should set a produces header', () => {
+    it('should default success to 200', (done) => {
 
-        const testHeaderVal: string = 'test-value';
-        const expectedHeader: { key: string, value: string } = {
-            key: 'Content-Type',
-            value: testHeaderVal
-        };
+        @LitComponent()
+        class TestComponent {
 
-        httpResponse = new HttpResponse(new MockRes(), {
-            produces: testHeaderVal
-        });
+            @GetMapping()
+            customSuccess(req, res: HttpResponse) {
+                res.success({});
+            }
+        }
 
-        // sending a success response
-        // should set the produces header
-        httpResponse.success({});
-
-        expect(
-            JSON.stringify(httpResponse.rawRes.headers[0])
-        ).to.equal(
-            JSON.stringify(expectedHeader)
-        );
+        component = TestBed.start(TestComponent);
+        component
+            .get('/')
+            .expect(200)
+            .end((err, res) => {
+                if (err) return done(err);
+                done();
+            });
     });
 
-    it('should handle a successful response', () => {
-        
-        const testBody = {
-            message: 'test'
-        };
+    it('should return 201 for a created response', (done) => {
 
-        httpResponse.success(testBody);
+        @LitComponent()
+        class TestComponent {
 
-        expect(httpResponse.rawRes['jsonVal']).to.equal(testBody);
-        expect(httpResponse.rawRes['statusVal']).to.equal(200);
+            @GetMapping()
+            customError(req, res: HttpResponse) {
+                res.created([]);
+            }
+        }
+
+        component = TestBed.start(TestComponent);
+        component
+            .get('/')
+            .expect(201)
+            .end((err, res) => {
+                if (err) return done(err);
+                done();
+            });
     });
 
-    it('should handle a created response', () => {
-      
-      const testBody = {
-          message: 'test'
-      };
+    it('should default errors to 500', (done) => {
 
-      httpResponse.created(testBody);
+        @LitComponent()
+        class TestComponent {
 
-      expect(httpResponse.rawRes['jsonVal']).to.equal(testBody);
-      expect(httpResponse.rawRes['statusVal']).to.equal(201);
+            @GetMapping()
+            customSuccess(req, res: HttpResponse) {
+                res.errored();
+            }
+        }
+
+        component = TestBed.start(TestComponent);
+        component
+            .get('/')
+            .expect(500)
+            .end((err, res) => {
+                if (err) return done(err);
+                done();
+            });
     });
 
-    it('should handle an error with a custom status', () => {
-      
-      const testBody = {
-          message: 'test error'
-      };
+    it('should allow setting custom error code and message', (done) => {
 
-      const testStatus: number = 403;
+        @LitComponent()
+        class TestComponent {
 
-      httpResponse.errored(testStatus, testBody);
+            @GetMapping()
+            customSuccess(req: HttpRequest, res: HttpResponse) {
+                res.errored(401, {});
+            }
+        }
 
-      expect(httpResponse.rawRes['jsonVal']).to.equal(testBody);
-      expect(httpResponse.rawRes['statusVal']).to.equal(testStatus);
-    });
-
-    it('should default an error body to {}', () => {
-
-      httpResponse.errored();
-
-      expect(JSON.stringify(httpResponse.rawRes['jsonVal'])).to.equal(JSON.stringify({}));
-      expect(httpResponse.rawRes['statusVal']).to.equal(500);
-    });
-
-    it('should default an error to status 500', () => {
-      
-      const testBody = {
-          message: 'test error'
-      };
-
-      httpResponse.errored(null, testBody);
-
-      expect(httpResponse.rawRes['jsonVal']).to.equal(testBody);
-      expect(httpResponse.rawRes['statusVal']).to.equal(500);
+        component = TestBed.start(TestComponent);
+        component
+            .get('/')
+            .expect(401)
+            .expect((res: HttpRequest) => {
+                expect(res.body.toString()).to.equal({}.toString());
+            })
+            .end((err, res) => {
+                if (err) return done(err);
+                done();
+            });
     });
 });
