@@ -38,7 +38,7 @@ import { GetMapping } from '@litstack/core/dist/http/mappings';
 @LitComponent()
 export class AppComponent {
 
-    private message = 'Hello world!';
+    private message = 'Hello World!';
 
     @GetMapping({
         path: '' // GET / is routed to onHello
@@ -56,6 +56,8 @@ export class AppComponent {
 Test your components [using supertest methods](https://github.com/visionmedia/supertest) and the Litstack TestBed:
 
 ```typescript
+import { TestBed, LitComponentTest } from '@litstack/core/dist/testing';
+
 describe('AppComponent', () => {
 
     let component: LitComponentTest;
@@ -72,15 +74,16 @@ describe('AppComponent', () => {
 
     it('should return a welcome message', (done) => {
 
-        component.get('/')
-                 .expect(200)
-                 .expect((res) => {
-                   expect(res.body.message).to.equal('Hello World!');
-                 })
-                 .end((err, res) => {
-                    if (err) return done(err);
-                    done();
-                 });
+        component
+            .get('/')
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.message).to.equal('Hello World!');
+            })
+            .end((err, res) => {
+                if (err) return done(err);
+                done();
+            });
     });
 });
 ```
