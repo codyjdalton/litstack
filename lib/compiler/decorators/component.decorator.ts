@@ -10,7 +10,7 @@ import { Injector } from "./../classes/injector.class";
  * @constructor
  */
 export const LitComponent = () : GenericClassDecorator<Type<any>> => {
-  return (target: Type<any>) => {
+  return (target: Type<any>): void => {
     Injector.set(target);
   };
 };

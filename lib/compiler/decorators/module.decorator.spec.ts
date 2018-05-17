@@ -6,10 +6,9 @@ import { LitModule } from '../..';
 describe('Class: Injector', () => {
 
     it('should allow passing exports to modules', () => {
+
         @LitModule({
-            exports: [
-                'test'
-            ]
+            exports: []
         })
         class TestModule {
 
