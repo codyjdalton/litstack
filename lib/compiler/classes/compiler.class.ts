@@ -6,12 +6,13 @@ import BodyParser = require('body-parser');
 
 import { Application, RequestHandler } from 'express';
 
-
 import { CoreCompiler, ILitComponent, ILitModule } from '../utils/compiler.utils';
+import { DefaultComponent } from '../components/default.component';
 import { HttpServer } from '../../http/utils/http.utils';
-import { RequestMethod } from '../../http/enums/request-method.enum';
 import { HttpResponse } from '../../http/classes/response.class';
+import { HttpNext } from '../../http/models/next.model';
 import { Injector } from './injector.class';
+import { RequestMethod } from '../../http/enums/request-method.enum';
 
 export class ServiceCompiler extends CoreCompiler {
 
@@ -115,21 +116,26 @@ export class ServiceCompiler extends CoreCompiler {
 
     /**
      * @function getHandler
-     * @param {ILitComponent} aComponent 
+     * @param {ILitComponent} component 
      * @param {string} name
      */
-    private getHandler(aComponent: ILitComponent, name: string): RequestHandler {
+    private getHandler(component: ILitComponent, name: string): RequestHandler {
         return (req: express.Request, 
                 res: express.Response, 
-                next: express.NextFunction): RequestHandler => {
+                next: HttpNext): RequestHandler => {
 
-            // include metadata to send with response
             const meta: Object = Injector.getAll(
-                aComponent,
+                component.prototype,
                 name
             );
+            const wrappedRes: HttpResponse = new HttpResponse(res, meta);
+            const paramLen: number = Injector.getParams(component, name).length;
+            const aComponent: ILitComponent = Injector.resolve(component);
 
-            return aComponent[name](req, new HttpResponse(res, meta));
+            return paramLen === 1 ? aComponent[name](wrappedRes) :
+                   paramLen === 2 ? aComponent[name](req, wrappedRes) :
+                   paramLen === 3 ? aComponent[name](req, wrappedRes, next) :
+                   DefaultComponent.prototype.notImplemented(wrappedRes);
         };
     }
     
@@ -137,18 +143,18 @@ export class ServiceCompiler extends CoreCompiler {
      * @function addRoute
      * @param {string} method 
      * @param {string} path 
-     * @param {string} aComponent 
+     * @param {string} component 
      * @param {string} name
      * Usage:
      * 
-     * LitCompiler.addRoute('post', 'some/route' aComponent, 'someMethod');
+     * LitCompiler.addRoute('post', 'some/route' SomeComponent, 'someMethod');
      * 
      * Sets:
      * POST /some/route
-     * adds handler aComponent.someMethod
+     * adds handler SomeComponent.someMethod
      */
-    private addRoute(method: RequestMethod, path: string, aComponent: ILitComponent, name: string): void {
-        this.app[method]('/' + path, this.getHandler(aComponent, name));
+    private addRoute(method: RequestMethod, path: string, component: ILitComponent, name: string): void {
+        this.app[method]('/' + path, this.getHandler(component, name));
     }
 
     /**
@@ -167,19 +173,22 @@ export class ServiceCompiler extends CoreCompiler {
      */
     private addRouteFromMethod(component: ILitComponent, method: string, path: string) {
 
-        // get a new instance of the component
-        const aComponent: ILitComponent = Injector.resolve(component);
-        const reqMethod: RequestMethod = Injector.get(aComponent, 'method', null, method);
+        const reqMethod: RequestMethod = Injector.get(
+            component.prototype,
+            'method',
+            null,
+            method
+        );
 
         // check if method is elligible for route and add
         if(reqMethod) {
 
             path = this.getPath([
                 path,
-                Injector.get(aComponent, 'path', null, method)
+                Injector.get(component.prototype, 'path', null, method)
             ]);
             
-            this.addRoute(reqMethod, path, aComponent, method);
+            this.addRoute(reqMethod, path, component, method);
         }
     }
 

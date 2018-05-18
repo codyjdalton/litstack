@@ -4,16 +4,18 @@
  * The HTTP response class is a wrapper for the
  * http response object
  */
-
 import express = require('express');
+import defaultResponse = require('default-response');
 
 import { Response } from '../models/response.model';
 import { Injector } from '../../compiler/classes/injector.class';
 
-// @TODO MOVE THIS TO ITS OWN FILE!!!!
+// @TODO MOVE THESE TO THEIR OWN FILE!!!!
 export interface metaConfig {
     produces?: string;
 }
+
+export type Body = Object | any[] | null;
 
 export class HttpResponse {
 
@@ -33,7 +35,7 @@ export class HttpResponse {
 
     /**
      * @function success
-     * @param {any} obj
+     * @param {Body} body
      * 
      * Usage:
      * res.success({ id: 'some-id' })
@@ -41,17 +43,14 @@ export class HttpResponse {
      * Would respond with 200 OK
      * { id: 'some-id' }
      */ 
-    success(obj: Object | any[], status: number = 200): void {
+    success(body: Body, status: number = 200): void {
 
-        // set the produces header if one exists 
-        this.setProduces();
-
-        this.response.status(status).json(obj);
+        this.respond(status, body);
     }
 
     /**
      * @function created
-     * @param {any} obj
+     * @param {Body} body
      * 
      * Usage:
      * res.created({ id: 'some-id' })
@@ -59,13 +58,14 @@ export class HttpResponse {
      * Would respond with 201 Created
      * { id: 'some-id' }
      */ 
-    created(obj: Object | any[]): void {
-        this.success(obj, 201);
+    created(body: Body): void {
+        this.success(body, 201);
     }
 
     /**
      * @function errored
-     * @param {any} obj
+     * @param {number} status
+     * @param {Object | any[]} body
      * 
      * Usage:
      * res.errored(404, { message: 'The resource was not found on this server' })
@@ -73,7 +73,16 @@ export class HttpResponse {
      * Would respond with 404 Created
      * { message: 'The resource was not found on this server' }
      */ 
-    errored(status: number | null = null, messageObj: Object = {}): void {
-        this.response.status(status || 500).json(messageObj);
+    errored(status: number = 500, body: Body = null): void {
+
+        this.respond(status, body);
+    }
+
+    private respond(status: number, body: Object | any[] | null): void {
+
+        // set the produces header if one exists 
+        this.setProduces();
+
+        this.response.status(status).json(body || defaultResponse.status(status));
     }
 }
