@@ -10,9 +10,10 @@ import { mapTo, delay } from 'rxjs/operators';
 
 import { GetMapping, PostMapping, PutMapping, PatchMapping, DeleteMapping } from '../../http/mappings';
 import { Injector } from './injector.class';
-import { LitModule, LitComponent } from '../..';
+import { LitModule, LitComponent, LitService } from '../..';
 import { ServiceCompiler, LitCompiler } from './compiler.class';
-import { HttpResponse } from '../../http';
+import { HttpRequest, HttpResponse, HttpNext } from '../../http';
+import { TestBed, LitComponentTest } from '../../testing';
 
 describe('Class: Compiler', () => {
 
@@ -350,4 +351,208 @@ describe('Class: Compiler', () => {
                     done();
                 });
     });
-  });
+
+    it('should inject res if the handler has a single param', (done) => {
+
+        @LitComponent()
+        class TestComponent {
+
+            @GetMapping()
+            getItems(res: HttpResponse): void {
+                res.success({ message: 'succeeded' });
+            }
+        }
+        
+        let component: LitComponentTest = TestBed.start(TestComponent);
+
+        component
+            .get('/')
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.message).to.equal('succeeded');
+            })
+            .end(function(err, res) {
+                TestBed.stop();
+                if (err) return done(err);
+                done();
+            });
+    });
+
+    it('should inject req and res if the handler has two params', (done) => {
+
+        @LitComponent()
+        class TestComponent {
+
+            @GetMapping({
+                path: ':id'
+            })
+            getItems(req: HttpRequest, res: HttpResponse): void {
+                res.success({ message: req.params.id });
+            }
+        }
+        
+        let component: LitComponentTest = TestBed.start(TestComponent);
+
+        component
+            .get('/another-test')
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.message).to.equal('another-test');
+            })
+            .end(function(err, res) {
+                TestBed.stop();
+                if (err) return done(err);
+                done();
+            });
+    });
+
+    it('should inject req, res, and next if the handler has three params', (done) => {
+
+        @LitComponent()
+        class TestComponent {
+
+            @GetMapping({
+                path: ':id'
+            })
+            getItems(req: HttpRequest, res: HttpResponse, next: HttpNext): void {
+
+                if(req.params.id === 'test') {
+                    res.success({ message: req.params.id });
+                    return;
+                }
+                
+                next();
+            }
+
+            @GetMapping({
+                path: ':id'
+            })
+            getItemsErr(res: HttpResponse): void {
+                res.errored(404, { message: 'error' });
+            }
+        }
+        
+        let component: LitComponentTest = TestBed.start(TestComponent);
+
+        component
+            .get('/yet-another-test')
+            .expect(404)
+            .expect((res) => {
+                expect(res.body.message).to.equal('error');
+            })
+            .end(function(err, res) {
+                TestBed.stop();
+                if (err) return done(err);
+                done();
+            });
+    });
+
+    it('should only handle the next route if next is called', (done) => {
+
+        @LitComponent()
+        class TestComponent {
+
+            @GetMapping({
+                path: ':id'
+            })
+            getItems(req: HttpRequest, res: HttpResponse, next: HttpNext): void {
+
+                if(req.params.id === 'test') {
+                    res.success({ message: req.params.id });
+                    return;
+                }
+                
+                next();
+            }
+
+            @GetMapping({
+                path: ':id'
+            })
+            getItemsErr(res: HttpResponse): void {
+                res.errored(404, { message: 'error' });
+            }
+        }
+        
+        
+        let component: LitComponentTest = TestBed.start(TestComponent);
+
+        component
+            .get('/test')
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.message).to.equal('test');
+            })
+            .end(function(err, res) {
+                TestBed.stop();
+                if (err) return done(err);
+                done();
+            });
+    });
+
+    it('should return 404 if no params are defined', (done) => {
+
+        @LitComponent()
+        class TestComponent {
+
+            @GetMapping({
+                path: ':id'
+            })
+            getItems(): void {
+
+                // I'm not really sure what they are doing here
+                // but hey, someone will do it
+                // we want to fail if this method is called
+                // and instead send them to the default component
+                // which will throw a 501 err
+                expect(true).to.be.false;
+            }
+        }
+        
+        let component: LitComponentTest = TestBed.start(TestComponent);
+
+        component
+            .get('/test')
+            .expect(501)
+            .end(function(err, res) {
+                TestBed.stop();
+                if (err) return done(err);
+                done();
+            });
+    });
+
+    it('should inject dependencies', (done) => {
+
+        @LitService()
+        class TestService {
+            message: string = 'test-val'
+        }
+
+        @LitComponent()
+        class TestComponent {
+
+            constructor(private testService: TestService) {
+            }
+
+            @GetMapping()
+            getItems(res: HttpResponse) {
+                res.success({
+                    message: this.testService.message
+                });
+            }
+        }
+
+        let component: LitComponentTest = TestBed.start(TestComponent);
+
+        component
+            .get('/')
+            .expect(200)
+            .expect(res => {
+                expect(res.body.message).to.equal('test-val');
+            })
+            .end(function(err, res) {
+                TestBed.stop();
+                if (err) return done(err);
+                done();
+            });
+    });
+});

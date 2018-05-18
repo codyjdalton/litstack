@@ -106,4 +106,31 @@ describe('Class: Injector', () => {
         expect(metadata.path).to.equal(expectedMetadata.path);
         expect(metadata.produces).to.equal(expectedMetadata.produces);
     });
+
+    it('should return a list of param types', () => {
+
+        @LitComponent()
+        class TestComponent {
+
+            @GetMapping()
+            resOnly(res) {
+                
+            }
+
+            @GetMapping()
+            reqRes(req, res) {
+
+            }
+
+            @GetMapping()
+            reqResNext(req, res, next) {
+                
+            }
+        }
+
+        expect(Injector.getParams(TestComponent, 'noMethod').length).to.equal(0);
+        expect(Injector.getParams(TestComponent, 'resOnly').length).to.equal(1);
+        expect(Injector.getParams(TestComponent, 'reqRes').length).to.equal(2);
+        expect(Injector.getParams(TestComponent, 'reqResNext').length).to.equal(3);
+    });
   });

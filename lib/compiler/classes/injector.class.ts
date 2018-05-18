@@ -56,4 +56,8 @@ export const Injector = new class {
       }, {}
     );
   }
+
+  getParams(target: Type<any>, propertyKey: string) {
+    return Reflect.getMetadata('design:paramtypes', target.prototype, propertyKey) || [];
+  }
 };

@@ -1,11 +1,12 @@
 {
   "name": "@litstack/core",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Typescript REST Framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "default-response": "^1.0.1",
     "express": "^4.16.3",
     "reflect-metadata": "^0.1.12",
     "rxjs": "^6.1.0",
