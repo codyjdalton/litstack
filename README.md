@@ -8,7 +8,7 @@ Using Angular and Spring boot design patterns, Litstack is a Typescript REST fra
 
 ### Option 1: Clone the seed app
 
-Follow the directions in the [the litstack seed](https://github.com/codyjdalton/litstack-seed) to get started right away.
+Follow the directions in [the litstack seed](https://github.com/codyjdalton/litstack-seed) to get started right away.
 
 ### Option 2: Start with a blank slate
 
