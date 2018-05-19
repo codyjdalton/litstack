@@ -2,21 +2,21 @@
  * mapping.decorator
  * Package and class imports
  */
-import { GenericClassDecorator, Type } from "../../utils/core.util";
 import { Injector } from "../../compiler/classes/injector.class";
+import { GenericClassDecorator, Type } from "../../utils/core.util";
 
-import { RequestMapping } from '../models/request-mapping.model';
-import { RequestMethod } from '../enums/request-method.enum';
+import { RequestMethod } from "../enums/request-method.enum";
+import { RequestMapping } from "../models/request-mapping.model";
 
 /**
  * Create generic request mapping method
  */
- const GenericMapping = (type: RequestMethod): Function => {
-    return (config: RequestMapping = {}) : Function => {
+const GenericMapping = (type: RequestMethod) => {
+    return (config: RequestMapping = {}): any => {
         return (target: Type<any>, propertyKey: string, descriptor: PropertyDescriptor): void => {
-    
+
           config.method = type;
-    
+
           Injector.set(target, config, propertyKey);
         };
     };

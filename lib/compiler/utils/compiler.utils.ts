@@ -1,9 +1,9 @@
 
-import { Type } from '../../utils/core.util';
-import { HttpConsole } from '../../http/utils/http.utils';
+import { HttpConsole } from "../../http/utils/http.utils";
+import { Type } from "../../utils/core.util";
 
 export class CoreCompiler {
-  console: HttpConsole = console;
+  public console: HttpConsole = console;
 }
 
 export type ILitModule = Type<any>;

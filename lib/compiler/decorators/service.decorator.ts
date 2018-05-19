@@ -9,7 +9,7 @@ import { Injector } from "./../classes/injector.class";
  * @returns {GenericClassDecorator<Type<any>>}
  * @constructor
  */
-export const LitService = () : GenericClassDecorator<Type<any>> => {
+export const LitService = (): GenericClassDecorator<Type<any>> => {
   return (target: Type<any>): void => {
     Injector.set(target);
   };

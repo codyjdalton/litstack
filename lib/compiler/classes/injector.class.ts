@@ -1,4 +1,4 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 
 import { GenericClassDecorator, Type } from "../../utils/core.util";
 /**
@@ -11,10 +11,10 @@ export const Injector = new class {
    * @param {Type<any>} target
    * @returns {T}
    */
-  resolve<T>(target: Type<any>): T {
+  public resolve<T>(target: Type<any>): T {
     // tokens are required dependencies, while injections are resolved tokens from the Injector
-    const tokens: Type<any>[] = Reflect.getMetadata('design:paramtypes', target) || [],
-      injections = tokens.map(token => Injector.resolve<any>(token));
+    const tokens: Array<Type<any>> = Reflect.getMetadata("design:paramtypes", target) || [];
+    const injections = tokens.map((token) => Injector.resolve<any>(token));
 
     return new target(...injections);
   }
@@ -23,7 +23,7 @@ export const Injector = new class {
    * Stores a service in the Injector
    * @param {Type<any>} target
    */
-  set(target: Type<any>, config: Object = {}, propertyKey: any = null): void {
+  public set(target: Type<any>, config: object = {}, propertyKey: any = null): void {
     Object.keys(config).forEach(
       (key: string) => Reflect.defineMetadata(key, config[key], target, propertyKey ? propertyKey : undefined)
     );
@@ -31,11 +31,11 @@ export const Injector = new class {
 
   /**
    * @function get
-   * @param {Type<any>} target 
-   * @param {string} key 
-   * @param {any} defaultValue 
+   * @param {Type<any>} target
+   * @param {string} key
+   * @param {any} defaultValue
    */
-  get(target: Type<any>, key: string, defaultValue: any = null, propertyKey: any = null): any {
+  public get(target: Type<any>, key: string, defaultValue: any = null, propertyKey: any = null): any {
     return Reflect.hasMetadata(key, target, propertyKey ? propertyKey : undefined) ?
            Reflect.getMetadata(key, target, propertyKey ? propertyKey : undefined) :
            defaultValue;
@@ -43,21 +43,21 @@ export const Injector = new class {
 
   /**
    * @function getAll
-   * @param target 
+   * @param target
    * @param propertyKey
-   * 
+   *
    * Return all values from a given object
    */
-  getAll(target: Type<any>, propertyKey: string): Object {
+  public getAll(target: Type<any>, propertyKey: string): object {
     return Reflect.getMetadataKeys(target, propertyKey).reduce(
-      (result: Object, key: string): Object => {
-        result[key] = this.get(target, key, undefined, propertyKey)
+      (result: object, key: string): object => {
+        result[key] = this.get(target, key, undefined, propertyKey);
         return result;
       }, {}
     );
   }
 
-  getParams(target: Type<any>, propertyKey: string) {
-    return Reflect.getMetadata('design:paramtypes', target.prototype, propertyKey) || [];
+  public getParams(target: Type<any>, propertyKey: string) {
+    return Reflect.getMetadata("design:paramtypes", target.prototype, propertyKey) || [];
   }
 };

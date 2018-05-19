@@ -1,18 +1,18 @@
 /**
  * compiler.class
  */
-import express = require('express');
-import BodyParser = require('body-parser');
+import BodyParser = require("body-parser");
+import express = require("express");
 
-import { Application, RequestHandler } from 'express';
+import { Application, RequestHandler } from "express";
 
-import { CoreCompiler, ILitComponent, ILitModule } from '../utils/compiler.utils';
-import { DefaultComponent } from '../components/default.component';
-import { HttpServer } from '../../http/utils/http.utils';
-import { HttpResponse } from '../../http/classes/response.class';
-import { HttpNext } from '../../http/models/next.model';
-import { Injector } from './injector.class';
-import { RequestMethod } from '../../http/enums/request-method.enum';
+import { HttpResponse } from "../../http/classes/response.class";
+import { RequestMethod } from "../../http/enums/request-method.enum";
+import { HttpNext } from "../../http/models/next.model";
+import { HttpServer } from "../../http/utils/http.utils";
+import { DefaultComponent } from "../components/default.component";
+import { CoreCompiler, ILitComponent, ILitModule } from "../utils/compiler.utils";
+import { Injector } from "./injector.class";
 
 export class ServiceCompiler extends CoreCompiler {
 
@@ -21,16 +21,16 @@ export class ServiceCompiler extends CoreCompiler {
 
     /**
      * @function bootstrap
-     * @param {ILitModule} Parent - Usually the app.module
-     * @param {number} port - defaults to 3000
-     * 
+     * @param {ILitModule} parent - Usually the app.module
+     * @param {string | number} port - defaults to 3000
+     *
      * Usage:
      * @LitModule()
      * class AppComponent {}
-     * 
+     *
      * LitCompiler.bootstrap(AppComponent)
      */
-    bootstrap(parent: ILitModule, port: string | number = 3000): void {
+    public bootstrap(parent: ILitModule, port: string | number = 3000): void {
 
         // 1. Add parser
         this.addParser();
@@ -44,7 +44,7 @@ export class ServiceCompiler extends CoreCompiler {
 
     /**
      * @function listen
-     * @param {number} port
+     * @param {string | number} port
      * Usage:
      * Litcompiler.listen()
      */
@@ -57,7 +57,7 @@ export class ServiceCompiler extends CoreCompiler {
      * @function addParser
      * Usage:
      * LitCompiler.addParser();
-     * 
+     *
      * Adds body parser to this.app
      */
     private addParser(): void {
@@ -72,59 +72,62 @@ export class ServiceCompiler extends CoreCompiler {
 
     /**
      * @function unpack
-     * @param {GenericModule} Parent 
+     * @param {ILitModule} parent
      * @param {path} inputPath
      */
-    private unpack(parent: ILitModule, inputPath: string = ''): void {
-        
+    private unpack(parent: ILitModule, inputPath: string = ""): void {
+
         const path = this.getPath([
             inputPath,
-            Injector.get(parent, 'path', '')
+            Injector.get(parent, "path", "")
         ]);
-        const imports = Injector.get(parent, 'imports', []);
+        const imports = Injector.get(parent, "imports", []);
 
         // add parent imports first
-        this.addExportedComponents(path, Injector.get(parent, 'exports', []));
+        this.addExportedComponents(path, Injector.get(parent, "exports", []));
 
-        imports.forEach((Child: ILitModule) => this.unpack(Child, path));
+        imports.forEach((child: ILitModule) => this.unpack(child, path));
     }
 
     /**
      * @function getMethodList
-     * @param {ILitComponent} target
+     * @param {ILitComponent} component
+     * @returns {string[]}
      */
     private getMethodList(component: ILitComponent): string[] {
         return Object.getOwnPropertyNames(component.prototype)
                      .filter(
-                        (name: string) => name !== 'constructor' // <-- maybe someday
+                        (name: string) => name !== "constructor" // <-- maybe someday
                      );
     }
 
     /**
      * @function getPath
-     * @param {string[]} parts
+     * @param {Array<string | null | undefined>} parts
+     * @returns {string}
      * Usage:
      * LitCompiler.getPath(['some', '', 'path']);
-     * 
+     *
      * returns: 'some/path'
      */
-    private getPath(parts: (string | null | undefined)[]): string {
+    private getPath(parts: Array<string | null | undefined>): string {
         return parts.filter(
-            part => part
-        ).join('/');
+            (part) => part
+        ).join("/");
     }
 
     /**
      * @function getHandler
-     * @param {ILitComponent} component 
+     * @param {ILitComponent} component
      * @param {string} name
+     * @returns {RequestHandler}
      */
     private getHandler(component: ILitComponent, name: string): RequestHandler {
-        return (req: express.Request, 
-                res: express.Response, 
+        return (req: express.Request,
+                res: express.Response,
                 next: HttpNext): RequestHandler => {
 
-            const meta: Object = Injector.getAll(
+            const meta: object = Injector.getAll(
                 component.prototype,
                 name
             );
@@ -138,67 +141,67 @@ export class ServiceCompiler extends CoreCompiler {
                    DefaultComponent.prototype.notImplemented(wrappedRes);
         };
     }
-    
+
     /**
      * @function addRoute
-     * @param {string} method 
-     * @param {string} path 
-     * @param {string} component 
+     * @param {RequestMethod} method
+     * @param {string} path
+     * @param {ILitComponent} component
      * @param {string} name
      * Usage:
-     * 
+     *
      * LitCompiler.addRoute('post', 'some/route' SomeComponent, 'someMethod');
-     * 
+     *
      * Sets:
      * POST /some/route
      * adds handler SomeComponent.someMethod
      */
     private addRoute(method: RequestMethod, path: string, component: ILitComponent, name: string): void {
-        this.app[method]('/' + path, this.getHandler(component, name));
+        this.app[method]("/" + path, this.getHandler(component, name));
     }
 
     /**
      * @function addRouteFromMethod
-     * @param {ILitComponent} Component 
-     * @param {string} method 
-     * @param {string} path 
-     * 
+     * @param {ILitComponent} component
+     * @param {name} method
+     * @param {string} path
+     *
      * Usage:
      * If SomeComponent has a @GetMapping with a method of 'getStuff'
      * LitCompiler.addRouteFromMethod(SomeComponent, 'getStuff', 'path/to/stuff')
-     * 
+     *
      * adds route:
      * GET /path/to/stuff
      * SomeComponent.getStuff
      */
-    private addRouteFromMethod(component: ILitComponent, method: string, path: string) {
+    private addRouteFromMethod(component: ILitComponent, name: string, path: string): void {
 
         const reqMethod: RequestMethod = Injector.get(
             component.prototype,
-            'method',
+            "method",
             null,
-            method
+            name
         );
 
         // check if method is elligible for route and add
-        if(reqMethod) {
+        if (reqMethod) {
 
             path = this.getPath([
                 path,
-                Injector.get(component.prototype, 'path', null, method)
+                Injector.get(component.prototype, "path", null, name)
             ]);
-            
-            this.addRoute(reqMethod, path, component, method);
+
+            this.addRoute(reqMethod, path, component, name);
         }
     }
 
     /**
      * @function addExportedComponents
-     * @param {string} path 
-     * @param {ILitComponent[]} includes 
+     * @param {string} path
+     * @param {ILitComponent[]} includes
      * Usage:
      * const moduleExports: LitComponent[] = [ SomeComponent, AnotherComponent ];
-     * 
+     *
      * // Adds all component routes for each, prefixing the path with 'root'.
      * LitCompiler.addExportedComponents('root', moduleExports);
      */
@@ -208,22 +211,22 @@ export class ServiceCompiler extends CoreCompiler {
                 this.getMethodList(Component).forEach(
                     (method: string): void => this.addRouteFromMethod(Component, method, path)
                 );
-            } 
+            }
         );
     }
 
     /**
      * @function greet
-     * @param {number} port
+     * @param {string | number} port
      * Usage:
      * LitCompiler.greet(1000)()
-     * 
+     *
      * logs: Application running on port 1000
      */
-    private greet(port: string | number): Function {
+    private greet(port: string | number) {
         return (): void => {
             this.console.log("Application running on port " + port);
-        }
+        };
     }
 }
 
