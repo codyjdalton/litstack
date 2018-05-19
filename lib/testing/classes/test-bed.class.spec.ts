@@ -1,38 +1,38 @@
 /**
  * test-bed.class.spec
  */
-import request = require('supertest');
+import request = require("supertest");
 
-import { expect } from 'chai';
-import { Injector } from '../../compiler/classes/injector.class';
-import { LitComponent } from '../..';
-import { GetMapping, PutMapping } from '../../http/mappings';
-import { TestBed } from '..';
+import { expect } from "chai";
+import { TestBed } from "..";
+import { LitComponent } from "../..";
+import { Injector } from "../../compiler/classes/injector.class";
+import { GetMapping, PutMapping } from "../../http/mappings";
 
-describe('Class: TestBed', () => {
+describe("Class: TestBed", () => {
 
     afterEach(() => {
         TestBed.stop();
     });
 
-    it('should allow testing a component', (done) => {
+    it("should allow testing a component", (done) => {
 
         @LitComponent()
         class SomeComponent {
-            
+
             @GetMapping()
-            getItems(req, res) {
+            public getItems(req, res) {
 
                 res.success({
-                    message: 'test'
+                    message: "test"
                 });
             }
 
             @PutMapping({
-                path: ':id',
-                produces: 'application/vnd.item.v1'
+                path: ":id",
+                produces: "application/vnd.item.v1"
             })
-            updateItem(req, res) {
+            public updateItem(req, res) {
                 res.success({
                     message: req.id
                 });
@@ -40,13 +40,13 @@ describe('Class: TestBed', () => {
         }
 
         TestBed.start(SomeComponent)
-               .get('/')
+               .get("/")
                .expect(200)
                .expect((res) => {
-                    expect(res.body.message).to.equal('test');
+                    expect(res.body.message).to.equal("test");
                })
                .end((err, res) => {
-                    if (err) return done(err);
+                    if (err) { return done(err); }
                     done();
                });
     });

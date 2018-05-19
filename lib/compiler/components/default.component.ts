@@ -1,14 +1,14 @@
 /**
  * default.component
  */
-import { HttpResponse } from "../../http";
 import { LitComponent } from "../..";
+import { HttpResponse } from "../../http";
 
 @LitComponent()
 export class DefaultComponent {
 
-    notImplemented(res: HttpResponse): void {
-        
+    public notImplemented(res: HttpResponse): void {
+
         res.errored(501);
     }
 }

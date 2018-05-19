@@ -1,0 +1,16 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "interface-name": false,
+        "max-classes-per-file": [true, "exclude-class-expressions"],
+        "new-parens": false,
+        "no-unused-expression": false,
+        "object-literal-sort-keys": false,
+        "trailing-comma": [true, {"esSpecCompliant": true}]
+    },
+    "rulesDirectory": []
+}

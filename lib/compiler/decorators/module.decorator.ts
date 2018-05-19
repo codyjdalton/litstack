@@ -1,8 +1,8 @@
 /**
  * module.decorator
  */
-import { ILitComponent, ILitModule } from '../utils/compiler.utils';
 import { GenericClassDecorator, Type } from "../../utils/core.util";
+import { ILitComponent, ILitModule } from "../utils/compiler.utils";
 import { Injector } from "./../classes/injector.class";
 
 /**
@@ -19,10 +19,10 @@ export interface LitModuleConfig {
  * @returns {GenericClassDecorator<Type<any>>}
  * @constructor
  */
-export const LitModule = (config: LitModuleConfig = {}) : GenericClassDecorator<Type<any>> => {
+export const LitModule = (config: LitModuleConfig = {}): GenericClassDecorator<Type<any>> => {
   return (target: Type<any>): void => {
 
-    config.path = config.path || '';
+    config.path = config.path || "";
     config.imports = config.imports || [];
     config.exports = config.exports || [];
 
