@@ -4,9 +4,9 @@
 import express = require("express");
 import request = require("supertest");
 
+import { Injector } from "super-injector";
 import { LitModule } from "../..";
 import { ServiceCompiler } from "../../compiler";
-import { Injector } from "../../compiler/classes/injector.class";
 import { ILitComponent } from "../../compiler/utils/compiler.utils";
 
 export class MockServiceCompiler extends ServiceCompiler {

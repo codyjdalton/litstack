@@ -7,7 +7,7 @@
 import defaultResponse = require("default-response");
 import express = require("express");
 
-import { Injector } from "../../compiler/classes/injector.class";
+import { Injector } from "super-injector";
 
 // @TODO MOVE THESE TO THEIR OWN FILE!!!!
 export interface MetaConfig {

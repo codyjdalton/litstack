@@ -6,13 +6,13 @@ import express = require("express");
 
 import { Application, RequestHandler } from "express";
 
+import { Injector } from "super-injector";
 import { HttpResponse } from "../../http/classes/response.class";
 import { RequestMethod } from "../../http/enums/request-method.enum";
 import { HttpNext } from "../../http/models/next.model";
 import { HttpServer } from "../../http/utils/http.utils";
 import { DefaultComponent } from "../components/default.component";
 import { CoreCompiler, ILitComponent, ILitModule } from "../utils/compiler.utils";
-import { Injector } from "./injector.class";
 
 export class ServiceCompiler extends CoreCompiler {
 
@@ -157,7 +157,11 @@ export class ServiceCompiler extends CoreCompiler {
      * adds handler SomeComponent.someMethod
      */
     private addRoute(method: RequestMethod, path: string, component: ILitComponent, name: string): void {
-        this.app[method]("/" + path, this.getHandler(component, name));
+
+        // method could be user input, sanitize it
+        const aMethod: string = method.toLowerCase();
+
+        this.app[aMethod]("/" + path, this.getHandler(component, name));
     }
 
     /**
