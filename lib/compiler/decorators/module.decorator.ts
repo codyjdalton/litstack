@@ -1,9 +1,9 @@
 /**
  * module.decorator
  */
+import { Injector } from "super-injector";
 import { GenericClassDecorator, Type } from "../../utils/core.util";
 import { ILitComponent, ILitModule } from "../utils/compiler.utils";
-import { Injector } from "./../classes/injector.class";
 
 /**
  * @TODO move this into its own file!

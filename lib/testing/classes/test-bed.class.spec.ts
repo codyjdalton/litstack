@@ -4,9 +4,9 @@
 import request = require("supertest");
 
 import { expect } from "chai";
+import { Injector } from "super-injector";
 import { TestBed } from "..";
 import { LitComponent } from "../..";
-import { Injector } from "../../compiler/classes/injector.class";
 import { GetMapping, PutMapping } from "../../http/mappings";
 
 describe("Class: TestBed", () => {

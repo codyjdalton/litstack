@@ -1,10 +1,16 @@
-language : node_js
-node_js :
- - stable
+language: node_js
+node_js:
+- stable
 install:
- - npm install
+- npm install
 script:
- - npm run build
-
- # Send coverage data to Coveralls
-after_script: "cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js"
+- npm run build
+after_script: cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js
+deploy:
+  provider: npm
+  email: codydevbox@gmail.com
+  on:
+    branch: master
+    repo: codyjdalton/litstack
+  api_key:
+    secure: qpscGYgtyfwLvQMwTqN6jblTmBnKUCp1E17WJqH/V901F0zdAkIlVGk7dYgvWU+YMIEyRdcmZUN6bjZX96s0ppBrKQMelVYPPlJPB1Kkaq9y/fkjLDWypaPQxS0ouQelmvx0KxvRP83ZymkE07sfIBnr2MVYhkZuEHOArbujz3mordOAqQpIXG5nkpitjjZdeY9YK/kbwvkBclV/gFw+07iraYl6FuOjN0fDuaj5Px+TvhQJoGrPA/xBCUtsakQKA1MPree6tl4oEVamwmEOhsx3hl4Ws5ddRTkP7L/3b9isVIpyCqRXqpJ+uCUmRizXaGHrGJ7OUShO4p3Mhkvpfkonk6THHsAzHfWb3d2fbiqYWg/mFWollNMzdOXMHcguJ1QygcKn91mdLbW/BECO3/+VsqFCIAgkUYwNAcU+1uIG1FWPPC8cqGgTYzkLaADtWHr0yvTGTFHzS+B+1xHawjnRsqG3JM1z5iVjr5Hl7Ygu66TSkcauJn3VEzkNoSr0DMT4VUdhGIlydLIzz0OS/bCK2a1urwoj6yoWbtE3ekNzgS7jONm2YfyqTlXiV5ipDFICO8dAPqROaWEy8mw0Faxu/w3CT0Tu8GiNeGKwuyNhAuhV1oQALwywhk9v4MT8OAGZzbmfI2bVI5uyA6vKvFJHBR6K7sd1f+tUHiOSdS4=

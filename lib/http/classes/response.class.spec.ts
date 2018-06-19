@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { HttpRequest } from "..";
 import { LitComponent } from "../..";
 import { LitComponentTest, TestBed } from "../../testing";
-import { GetMapping } from "../mappings";
+import { GetMapping, RequestMapping } from "../mappings";
 import { HttpResponse } from "./response.class";
 
 describe("Class: HttpResponse", () => {
@@ -95,6 +95,35 @@ describe("Class: HttpResponse", () => {
             .expect(401)
             .expect((res: HttpRequest) => {
                 expect(res.body.toString()).to.equal({}.toString());
+            })
+            .end((err, res) => {
+                if (err) { return done(err); }
+                done();
+            });
+    });
+
+    it("should support a custom mapping", (done) => {
+
+        @LitComponent()
+        class TestComponent {
+
+            @RequestMapping({
+                method: "post",
+                path: "someurl"
+            })
+            public customSuccess(req: HttpRequest, res: HttpResponse) {
+                res.success({
+                    success: true
+                }, 200);
+            }
+        }
+
+        component = TestBed.start(TestComponent);
+        component
+            .post("/someurl")
+            .expect(200)
+            .expect((res: HttpRequest) => {
+                expect(res.body.toString()).to.equal({ success: true }.toString());
             })
             .end((err, res) => {
                 if (err) { return done(err); }

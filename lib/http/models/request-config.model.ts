@@ -1,7 +1,7 @@
 /**
- * request-mapping.model
+ * request-config.model
  */
-export interface RequestMapping {
+export interface RequestConfig {
     path?: string;
     method?: string;
     produces?: string;

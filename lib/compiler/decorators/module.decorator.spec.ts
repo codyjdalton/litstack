@@ -1,9 +1,9 @@
 import { expect } from "chai";
 
+import { Injector } from "super-injector";
 import { LitModule } from "../..";
-import { Injector } from "../classes/injector.class";
 
-describe("Class: Injector", () => {
+describe("ModuleDecorator", () => {
 
     it("should allow passing exports to modules", () => {
 

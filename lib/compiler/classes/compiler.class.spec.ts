@@ -8,12 +8,13 @@ import { expect } from "chai";
 import { merge, Observable, of, Subscription } from "rxjs";
 import { delay, mapTo } from "rxjs/operators";
 
+import { Injector } from "super-injector";
+
 import { LitComponent, LitModule, LitService } from "../..";
 import { HttpNext, HttpRequest, HttpResponse } from "../../http";
 import { DeleteMapping, GetMapping, PatchMapping, PostMapping, PutMapping } from "../../http/mappings";
 import { LitComponentTest, TestBed } from "../../testing";
 import { LitCompiler, ServiceCompiler } from "./compiler.class";
-import { Injector } from "./injector.class";
 
 describe("Class: Compiler", () => {
 
