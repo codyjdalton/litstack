@@ -6,7 +6,7 @@
     "jsRules": {},
     "rules": {
         "interface-name": false,
-        "max-classes-per-file": [true, "exclude-class-expressions"],
+        "max-classes-per-file": false,
         "new-parens": false,
         "no-unused-expression": false,
         "object-literal-sort-keys": false,
