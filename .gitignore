@@ -10,3 +10,6 @@
 
 # system files
 .DS_Store
+
+# npm
+.package-lock.json
