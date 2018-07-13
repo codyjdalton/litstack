@@ -6,11 +6,3 @@ install:
 script:
 - npm run build
 after_script: cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js
-deploy:
-  provider: npm
-  email: codydevbox@gmail.com
-  on:
-    branch: master
-    repo: codyjdalton/litstack
-  api_key:
-    secure: ejOSNfRrEa8Jt/zARnFfJ87IWEGF998gsRE5/GhCQDc8Yilq6KIfAF1v97Hhk7O1Qyt8VMK90w5J/s1Pm1DUs252VCjKTNypmOYtf2hphd7QCNi17kuMDlXaX749EIjqCzrE+GM1xfWmRidcFTMESDPsdFFuhpK+2eO2R+AY2mqudlQu+mVgoTFLKAEm/3CD79TyKQdt62tPHV3WaQOHhqVmlRvYZQITYcf6aRMOTc/VB59GeVRFtFIzCcKhTMfUVgwx0/CgKJoXS76G0VWH6BLEl3ILs3rOXLdMDsVH/hyVkpoJawvQ/k5ogxmDbKoMGetgGlcxYIk9QD0tDucNlKSiYiXqadXDmjgP8yco++iwqE6qwd4XH2hnb57+Dr333g9NIBAMxd939MJEU86ZzgLM+hLY6kvUeyXKdlbLd4sYIzTyjbQK5dfUlj/sAYZW5lX1Pp5Y1/kRv07hZJk11DHmDZzNI7Fuio1F7m2FMcQjwfxc4NXuEZAL7Dj8vQAxq0zrsTOrkGlh+hQqtkRHeTjQc1oHJEqDePCd/Ii2ur8tiMd1hCdtIG/iDHU/462Zr3UNtGPsLrzrf05m2YnbWDxW+AUBuerr0Y5Uwu83MkMhFXxqV1E+pJ+Vq8H3GyuY9VGrEBDU6tvgteoja85fZl9RMYmWMFjMOQ7DhqJR13Q=
