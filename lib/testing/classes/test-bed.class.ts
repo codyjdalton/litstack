@@ -7,7 +7,7 @@ import request = require("supertest");
 import { Injector } from "super-injector";
 import { LitModule } from "../..";
 import { ServiceCompiler } from "../../compiler";
-import { ILitComponent } from "../../compiler/utils/compiler.utils";
+import { ILitComponent, ILitModule } from "../../compiler/utils/compiler.utils";
 
 export class MockServiceCompiler extends ServiceCompiler {
 
@@ -19,8 +19,6 @@ export class MockServiceCompiler extends ServiceCompiler {
      */
     public start(component: ILitComponent): request.SuperTest<request.Test> {
 
-        this.reset();
-
         @LitModule({
             exports: [
                 component
@@ -29,6 +27,17 @@ export class MockServiceCompiler extends ServiceCompiler {
         class TestModule {
 
         }
+
+        return this.startModule(TestModule);
+    }
+
+    /**
+     * @method startModule
+     * @param TestModule
+     */
+    public startModule(TestModule: ILitModule): request.SuperTest<request.Test> {
+
+        this.reset();
 
         this.bootstrap(TestModule);
 
