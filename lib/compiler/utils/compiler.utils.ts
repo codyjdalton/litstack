@@ -1,8 +1,9 @@
 
-import { HttpConsole } from "../../http/utils/http.utils";
-import { Type } from "../../utils/core.util";
+import { HttpConsole } from '../../http/utils/http.utils';
+import { Type } from '../../utils/core.util';
 
 export class CoreCompiler {
+  public logged: string[] = [];
   protected console: HttpConsole = console;
 }
 

@@ -1,18 +1,18 @@
 /**
  * compiler.class
  */
-import BodyParser = require("body-parser");
-import express = require("express");
+import BodyParser = require('body-parser');
+import express = require('express');
 
-import { Application, RequestHandler } from "express";
+import { Application, RequestHandler } from 'express';
 
-import { Injector } from "super-injector";
-import { HttpResponse } from "../../http/classes/response.class";
-import { RequestMethod } from "../../http/enums/request-method.enum";
-import { HttpNext } from "../../http/models/next.model";
-import { HttpServer } from "../../http/utils/http.utils";
-import { DefaultComponent } from "../components/default.component";
-import { CoreCompiler, ILitComponent, ILitModule } from "../utils/compiler.utils";
+import { Injector } from 'super-injector';
+import { HttpRequest, HttpResponse } from '../../http';
+import { RequestMethod } from '../../http/enums/request-method.enum';
+import { HttpNext } from '../../http/models/next.model';
+import { HttpServer } from '../../http/utils/http.utils';
+import { DefaultComponent } from '../components/default.component';
+import { CoreCompiler, ILitComponent, ILitModule } from '../utils/compiler.utils';
 
 export class ServiceCompiler extends CoreCompiler {
 
@@ -30,7 +30,7 @@ export class ServiceCompiler extends CoreCompiler {
      *
      * LitCompiler.bootstrap(AppComponent)
      */
-    public bootstrap(parent: ILitModule, port: string | number = 3000): void {
+    public bootstrap(parent: ILitModule, port: string | number | null = 3000): void {
 
         // 1. Add parser
         this.addParser();
@@ -48,7 +48,7 @@ export class ServiceCompiler extends CoreCompiler {
      * Usage:
      * Litcompiler.listen()
      */
-    private listen(port: string | number): void {
+    private listen(port: string | number | null): void {
 
         this.server = this.app.listen(port, this.greet(port));
     }
@@ -75,16 +75,16 @@ export class ServiceCompiler extends CoreCompiler {
      * @param {ILitModule} parent
      * @param {path} inputPath
      */
-    private unpack(parent: ILitModule, inputPath: string = ""): void {
+    private unpack(parent: ILitModule, inputPath: string = ''): void {
 
         const path = this.getPath([
             inputPath,
-            Injector.get(parent, "path", "")
+            Injector.get(parent, 'path', '')
         ]);
-        const imports = Injector.get(parent, "imports", []);
+        const imports = Injector.get(parent, 'imports', []);
 
         // add parent imports first
-        this.addExportedComponents(path, Injector.get(parent, "exports", []));
+        this.addExportedComponents(path, Injector.get(parent, 'exports', []));
 
         imports.forEach((child: ILitModule) => this.unpack(child, path));
     }
@@ -97,7 +97,7 @@ export class ServiceCompiler extends CoreCompiler {
     private getMethodList(component: ILitComponent): string[] {
         return Object.getOwnPropertyNames(component.prototype)
                      .filter(
-                        (name: string) => name !== "constructor" // <-- maybe someday
+                        (name: string) => name !== 'constructor' // <-- maybe someday
                      );
     }
 
@@ -113,7 +113,7 @@ export class ServiceCompiler extends CoreCompiler {
     private getPath(parts: Array<string | null | undefined>): string {
         return parts.filter(
             (part) => part
-        ).join("/");
+        ).join('/');
     }
 
     /**
@@ -123,7 +123,7 @@ export class ServiceCompiler extends CoreCompiler {
      * @returns {RequestHandler}
      */
     private getHandler(component: ILitComponent, name: string): RequestHandler {
-        return (req: express.Request,
+        return (req: HttpRequest,
                 res: express.Response,
                 next: HttpNext): RequestHandler => {
 
@@ -161,7 +161,7 @@ export class ServiceCompiler extends CoreCompiler {
         // method could be user input, sanitize it
         const aMethod: string = method.toLowerCase();
 
-        this.app[aMethod]("/" + path, this.getHandler(component, name));
+        this.app[aMethod]('/' + path, this.getHandler(component, name));
     }
 
     /**
@@ -182,7 +182,7 @@ export class ServiceCompiler extends CoreCompiler {
 
         const reqMethod: RequestMethod = Injector.get(
             component.prototype,
-            "method",
+            'method',
             null,
             name
         );
@@ -192,7 +192,7 @@ export class ServiceCompiler extends CoreCompiler {
 
             path = this.getPath([
                 path,
-                Injector.get(component.prototype, "path", null, name)
+                Injector.get(component.prototype, 'path', null, name)
             ]);
 
             this.addRoute(reqMethod, path, component, name);
@@ -227,9 +227,9 @@ export class ServiceCompiler extends CoreCompiler {
      *
      * logs: Application running on port 1000
      */
-    private greet(port: string | number) {
+    private greet(port: string | number | null): () => void {
         return (): void => {
-            this.console.log("Application running on port " + port);
+            this.console.log('Application running on port ' + port);
         };
     }
 }

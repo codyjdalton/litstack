@@ -1,7 +1,7 @@
 /**
  * request.model
  */
-import express = require("express");
+import express = require('express');
 
 /**
  * This type is to emulate the supported types

@@ -4,10 +4,8 @@
  * The HTTP response class is a wrapper for the
  * http response object
  */
-import defaultResponse = require("default-response");
-import express = require("express");
-
-import { Injector } from "super-injector";
+import defaultResponse = require('default-response');
+import express = require('express');
 
 // @TODO MOVE THESE TO THEIR OWN FILE!!!!
 export interface MetaConfig {
@@ -24,7 +22,7 @@ export class HttpResponse {
 
     public setProduces(): void {
         if (this.meta.produces) {
-            this.setHeaders("Content-Type", this.meta.produces);
+            this.setHeaders('Content-Type', this.meta.produces);
         }
     }
 

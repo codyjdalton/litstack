@@ -1,105 +1,43 @@
 /**
  * compiler.class.spec
  */
-import { expect } from "chai";
-import { merge, of, Subscription } from "rxjs";
-import { delay, mapTo } from "rxjs/operators";
+import { expect } from 'chai';
 
-import { Injector } from "super-injector";
+import { LitComponent, LitModule, LitService } from '../..';
+import { HttpNext, HttpRequest, HttpResponse } from '../../http';
+import { DeleteMapping, GetMapping, PostMapping, PutMapping } from '../../http/mappings';
+import { LitComponentTest, TestBed } from '../../testing';
 
-import { LitComponent, LitModule, LitService } from "../..";
-import { HttpNext, HttpRequest, HttpResponse } from "../../http";
-import { DeleteMapping, GetMapping, PostMapping, PutMapping } from "../../http/mappings";
-import { LitComponentTest, TestBed } from "../../testing";
-import { ServiceCompiler } from "./compiler.class";
-
-describe("Class: Compiler", () => {
-
-    let compiler: ServiceCompilerStub;
-
-    class ServiceCompilerStub extends ServiceCompiler {
-
-        public port: string | number = "";
-
-        // we don't want to actually log anything
-        // to the console in our spec
-        // so we will mock this.console
-        public console = new class {
-            public logged: string[] = [];
-            public log(text: string): void {
-                // ..
-                this.logged.push(text);
-            }
-        };
-
-        public getPort() {
-            return this.server.address().port;
-        }
-
-        public closeServer() {
-            if (this.server) {
-                this.server.close();
-            }
-        }
-    }
-
-    beforeEach(() => {
-
-        compiler = Injector.resolve(ServiceCompilerStub);
-    });
+describe('Class: Compiler', () => {
 
     afterEach(() => {
-        compiler.closeServer();
         TestBed.stop();
     });
 
-    it("should allow setting a custom port", () => {
+    it('should log the application port to the console', (done) => {
 
         @LitModule()
         class TestModule {
-
-        }
-
-        const testPort = 8080;
-
-        compiler.bootstrap(TestModule, testPort);
-
-        expect(compiler.getPort()).to.equal(testPort);
-    });
-
-    it("should start the application with a greeting", (done) => {
-
-        @LitModule()
-        class TestModule {
-
         }
 
         const testPort: number = 8080;
-        const expectedGreeting: string = "Application running on port " + testPort;
+        const expectedGreeting: string = 'Application running on port ' + testPort;
 
-        compiler.bootstrap(TestModule, testPort);
-
-        const res = of(null);
-        const emitter: Subscription = merge(
-            res.pipe(mapTo(
-                null
-            ), delay(10))
-        ).subscribe(
-            (res2) =>  {
-                expect(compiler.console.logged[0]).to.equal(expectedGreeting);
-                emitter.unsubscribe();
+        TestBed.startModule(TestModule, testPort)
+            .get('/')
+            .end(() => {
+                expect(TestBed.logged[0]).to.equal(expectedGreeting);
                 done();
-            }
-        );
+            });
     });
 
-    it("should add module imports", (done) => {
+    it('should add module imports', (done) => {
 
         @LitComponent()
         class TestComponent {
 
             @PostMapping({
-                path: "items"
+                path: 'items'
             })
             public getItems(res) {
                 // ..
@@ -115,7 +53,7 @@ describe("Class: Compiler", () => {
         class TestModule {}
 
         @LitModule({
-            path: "some",
+            path: 'some',
             imports: [
                 TestModule
             ]
@@ -124,7 +62,7 @@ describe("Class: Compiler", () => {
 
         const aModule: LitComponentTest = TestBed.startModule(TestAppModule);
 
-        aModule.post("/some/items")
+        aModule.post('/some/items')
             .send({})
             .expect(200)
             .end((err, res) => {
@@ -133,7 +71,7 @@ describe("Class: Compiler", () => {
             });
     });
 
-    it("should allow non-routed methods", (done) => {
+    it('should allow non-routed methods', (done) => {
 
         @LitComponent()
         class TestComponent {
@@ -154,7 +92,7 @@ describe("Class: Compiler", () => {
         const component: LitComponentTest = TestBed.start(TestComponent);
 
         component
-            .get("/")
+            .get('/')
             .expect(200)
             .end((err, res) => {
                 if (err) { return done(err); }
@@ -162,13 +100,13 @@ describe("Class: Compiler", () => {
             });
     });
 
-    it("should walk the entire import tree", (done) => {
+    it('should walk the entire import tree', (done) => {
 
         @LitComponent()
         class GrandChildComponent {
 
             @PutMapping({
-                path: ":grandchild_id"
+                path: ':grandchild_id'
             })
             public getGrand(req, res) {
                 res.success();
@@ -185,7 +123,7 @@ describe("Class: Compiler", () => {
         }
 
         @LitModule({
-            path: "grandchildren",
+            path: 'grandchildren',
             exports: [
                 GrandChildComponent
             ]
@@ -194,7 +132,7 @@ describe("Class: Compiler", () => {
         }
 
         @LitModule({
-            path: "children",
+            path: 'children',
             imports: [
                 GrandChildModule
             ]
@@ -203,7 +141,7 @@ describe("Class: Compiler", () => {
         }
 
         @LitModule({
-            path: "parents",
+            path: 'parents',
             imports: [
                 ChildModule
             ],
@@ -237,18 +175,18 @@ describe("Class: Compiler", () => {
 
         const aModule: LitComponentTest = TestBed.startModule(TestModule);
 
-        aModule.put("/parents/children/grandchildren/:grandchild_id")
+        aModule.put('/parents/children/grandchildren/:grandchild_id')
             .send({})
             .expect(200)
             .end((err, res) => {
                 if (err) { return done(err); }
 
-                aModule.delete("/parents")
+                aModule.delete('/parents')
                     .expect(200)
                     .end((err2) => {
                         if (err2) { return done(err2); }
 
-                        aModule.post("/")
+                        aModule.post('/')
                             .send({})
                             .expect(200)
                             .end((err3) => {
@@ -259,14 +197,14 @@ describe("Class: Compiler", () => {
             });
     });
 
-    it("should respond to http requests", (done) => {
+    it('should respond to http requests', (done) => {
 
         @LitComponent()
         class TestComponent {
 
             @GetMapping({
-                path: ":id",
-                produces: "application/vnd.messages.v1+json"
+                path: ':id',
+                produces: 'application/vnd.messages.v1+json'
             })
             public getItem(req, res: HttpResponse) {
                 res.success({
@@ -275,16 +213,16 @@ describe("Class: Compiler", () => {
             }
         }
 
-        const contentType: string = "application/vnd.messages.v1+json; charset=utf-8";
+        const contentType: string = 'application/vnd.messages.v1+json; charset=utf-8';
 
         const component: LitComponentTest = TestBed.start(TestComponent);
 
         component
-            .get("/123")
+            .get('/123')
             .expect(200)
-            .expect("Content-Type", contentType)
+            .expect('Content-Type', contentType)
             .expect((res) => {
-                expect(res.body.message).to.equal("123");
+                expect(res.body.message).to.equal('123');
             })
             .end((err, res) => {
                 if (err) { return done(err); }
@@ -292,24 +230,24 @@ describe("Class: Compiler", () => {
             });
     });
 
-    it("should inject res if the handler has a single param", (done) => {
+    it('should inject res if the handler has a single param', (done) => {
 
         @LitComponent()
         class TestComponent {
 
             @GetMapping()
             public getItems(res: HttpResponse): void {
-                res.success({ message: "succeeded" });
+                res.success({ message: 'succeeded' });
             }
         }
 
         const component: LitComponentTest = TestBed.start(TestComponent);
 
         component
-            .get("/")
+            .get('/')
             .expect(200)
             .expect((res) => {
-                expect(res.body.message).to.equal("succeeded");
+                expect(res.body.message).to.equal('succeeded');
             })
             .end((err, res) => {
                 if (err) { return done(err); }
@@ -317,13 +255,13 @@ describe("Class: Compiler", () => {
             });
     });
 
-    it("should inject req and res if the handler has two params", (done) => {
+    it('should inject req and res if the handler has two params', (done) => {
 
         @LitComponent()
         class TestComponent {
 
             @GetMapping({
-                path: ":id"
+                path: ':id'
             })
             public getItems(req: HttpRequest, res: HttpResponse): void {
                 res.success({ message: req.params.id });
@@ -333,10 +271,10 @@ describe("Class: Compiler", () => {
         const component: LitComponentTest = TestBed.start(TestComponent);
 
         component
-            .get("/another-test")
+            .get('/another-test')
             .expect(200)
             .expect((res) => {
-                expect(res.body.message).to.equal("another-test");
+                expect(res.body.message).to.equal('another-test');
             })
             .end((err, res) => {
                 if (err) { return done(err); }
@@ -344,17 +282,17 @@ describe("Class: Compiler", () => {
             });
     });
 
-    it("should inject req, res, and next if the handler has three params", (done) => {
+    it('should inject req, res, and next if the handler has three params', (done) => {
 
         @LitComponent()
         class TestComponent {
 
             @GetMapping({
-                path: ":id"
+                path: ':id'
             })
             public getItems(req: HttpRequest, res: HttpResponse, next: HttpNext): void {
 
-                if (req.params.id === "test") {
+                if (req.params.id === 'test') {
                     res.success({ message: req.params.id });
                     return;
                 }
@@ -363,20 +301,20 @@ describe("Class: Compiler", () => {
             }
 
             @GetMapping({
-                path: ":id"
+                path: ':id'
             })
             public getItemsErr(res: HttpResponse): void {
-                res.errored(404, { message: "error" });
+                res.errored(404, { message: 'error' });
             }
         }
 
         const component: LitComponentTest = TestBed.start(TestComponent);
 
         component
-            .get("/yet-another-test")
+            .get('/yet-another-test')
             .expect(404)
             .expect((res) => {
-                expect(res.body.message).to.equal("error");
+                expect(res.body.message).to.equal('error');
             })
             .end((err, res) => {
                 if (err) { return done(err); }
@@ -384,17 +322,17 @@ describe("Class: Compiler", () => {
             });
     });
 
-    it("should only handle the next route if next is called", (done) => {
+    it('should only handle the next route if next is called', (done) => {
 
         @LitComponent()
         class TestComponent {
 
             @GetMapping({
-                path: ":id"
+                path: ':id'
             })
             public getItems(req: HttpRequest, res: HttpResponse, next: HttpNext): void {
 
-                if (req.params.id === "test") {
+                if (req.params.id === 'test') {
                     res.success({ message: req.params.id });
                     return;
                 }
@@ -403,20 +341,20 @@ describe("Class: Compiler", () => {
             }
 
             @GetMapping({
-                path: ":id"
+                path: ':id'
             })
             public getItemsErr(res: HttpResponse): void {
-                res.errored(404, { message: "error" });
+                res.errored(404, { message: 'error' });
             }
         }
 
         const component: LitComponentTest = TestBed.start(TestComponent);
 
         component
-            .get("/test")
+            .get('/test')
             .expect(200)
             .expect((res) => {
-                expect(res.body.message).to.equal("test");
+                expect(res.body.message).to.equal('test');
             })
             .end((err, res) => {
                 if (err) { return done(err); }
@@ -424,13 +362,13 @@ describe("Class: Compiler", () => {
             });
     });
 
-    it("should return 404 if no params are defined", (done) => {
+    it('should return 404 if no params are defined', (done) => {
 
         @LitComponent()
         class TestComponent {
 
             @GetMapping({
-                path: ":id"
+                path: ':id'
             })
             public getItems(): void {
 
@@ -446,7 +384,7 @@ describe("Class: Compiler", () => {
         const component: LitComponentTest = TestBed.start(TestComponent);
 
         component
-            .get("/test")
+            .get('/test')
             .expect(501)
             .end((err, res) => {
                 if (err) { return done(err); }
@@ -454,11 +392,11 @@ describe("Class: Compiler", () => {
             });
     });
 
-    it("should inject dependencies", (done) => {
+    it('should inject dependencies', (done) => {
 
         @LitService()
         class TestService {
-            public message: string = "test-val";
+            public message: string = 'test-val';
         }
 
         @LitComponent()
@@ -478,10 +416,10 @@ describe("Class: Compiler", () => {
         const component: LitComponentTest = TestBed.start(TestComponent);
 
         component
-            .get("/")
+            .get('/')
             .expect(200)
             .expect((res) => {
-                expect(res.body.message).to.equal("test-val");
+                expect(res.body.message).to.equal('test-val');
             })
             .end((err, res) => {
                 if (err) { return done(err); }

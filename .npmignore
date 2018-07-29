@@ -9,5 +9,5 @@
 .DS_Store
 
 # project files
-lib/
+/lib
 tsconfig.json
