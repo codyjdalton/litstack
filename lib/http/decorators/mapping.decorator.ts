@@ -2,11 +2,11 @@
  * mapping.decorator
  * Package and class imports
  */
-import { Injector } from "super-injector";
-import { GenericClassDecorator, Type } from "../../utils/core.util";
+import { Injector } from 'super-injector';
+import { GenericClassDecorator, Type } from '../../utils/core.util';
 
-import { RequestMethod } from "../enums/request-method.enum";
-import { RequestConfig } from "../models/request-config.model";
+import { RequestMethod } from '../enums/request-method.enum';
+import { RequestConfig } from '../models/request-config.model';
 
 /**
  * Create generic request mapping method

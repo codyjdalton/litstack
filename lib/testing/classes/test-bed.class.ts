@@ -1,13 +1,13 @@
 /**
  * test-bed.class
  */
-import express = require("express");
-import request = require("supertest");
+import express = require('express');
+import request = require('supertest');
 
-import { Injector } from "super-injector";
-import { LitModule } from "../..";
-import { ServiceCompiler } from "../../compiler";
-import { ILitComponent, ILitModule } from "../../compiler/utils/compiler.utils";
+import { Injector } from 'super-injector';
+import { LitModule } from '../..';
+import { ServiceCompiler } from '../../compiler';
+import { ILitComponent, ILitModule } from '../../compiler/utils/compiler.utils';
 
 export class MockServiceCompiler extends ServiceCompiler {
 
@@ -35,11 +35,11 @@ export class MockServiceCompiler extends ServiceCompiler {
      * @method startModule
      * @param TestModule
      */
-    public startModule(TestModule: ILitModule): request.SuperTest<request.Test> {
+    public startModule(TestModule: ILitModule, port: number | null = null): request.SuperTest<request.Test> {
 
         this.reset();
 
-        this.bootstrap(TestModule);
+        this.bootstrap(TestModule, port || undefined);
 
         return request(this.app);
     }
@@ -65,10 +65,8 @@ export class MockServiceCompiler extends ServiceCompiler {
 
         this.stop();
 
-        this.console = new class {
-            public log() {
-                // ..
-            }
+        this.console = {
+            log: (txt: string) => this.logged.push(txt)
         };
     }
 }

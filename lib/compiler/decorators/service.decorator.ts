@@ -1,8 +1,8 @@
 /**
  * service.decorator
  */
-import { Injector } from "super-injector";
-import { GenericClassDecorator, Type } from "../../utils/core.util";
+import { Injector } from 'super-injector';
+import { GenericClassDecorator, Type } from '../../utils/core.util';
 
 /**
  * Classes decorated with the `@Service` decorator are stored within the injector and can be resolved by it.

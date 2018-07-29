@@ -1,21 +1,28 @@
 /**
  * test-bed.class.spec
  */
-import request = require("supertest");
+import { expect } from 'chai';
+import { TestBed } from '..';
+import { LitComponent, LitModule } from '../..';
+import { GetMapping, PutMapping } from '../../http/mappings';
 
-import { expect } from "chai";
-import { Injector } from "super-injector";
-import { TestBed } from "..";
-import { LitComponent } from "../..";
-import { GetMapping, PutMapping } from "../../http/mappings";
-
-describe("Class: TestBed", () => {
+describe('Class: TestBed', () => {
 
     afterEach(() => {
         TestBed.stop();
     });
 
-    it("should allow testing a component", (done) => {
+    it('should store logged messages', () => {
+
+        @LitModule()
+        class TestModule {}
+
+        TestBed.start(TestModule);
+
+        expect(TestBed.logged.length).to.be.above(0);
+    });
+
+    it('should allow testing a component', (done) => {
 
         @LitComponent()
         class SomeComponent {
@@ -24,13 +31,13 @@ describe("Class: TestBed", () => {
             public getItems(req, res) {
 
                 res.success({
-                    message: "test"
+                    message: 'test'
                 });
             }
 
             @PutMapping({
-                path: ":id",
-                produces: "application/vnd.item.v1"
+                path: ':id',
+                produces: 'application/vnd.item.v1'
             })
             public updateItem(req, res) {
                 res.success({
@@ -40,10 +47,10 @@ describe("Class: TestBed", () => {
         }
 
         TestBed.start(SomeComponent)
-               .get("/")
+               .get('/')
                .expect(200)
                .expect((res) => {
-                    expect(res.body.message).to.equal("test");
+                    expect(res.body.message).to.equal('test');
                })
                .end((err, res) => {
                     if (err) { return done(err); }

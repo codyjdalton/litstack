@@ -1,9 +1,9 @@
 /**
  * module.decorator
  */
-import { Injector } from "super-injector";
-import { GenericClassDecorator, Type } from "../../utils/core.util";
-import { ILitComponent, ILitModule } from "../utils/compiler.utils";
+import { Injector } from 'super-injector';
+import { GenericClassDecorator, Type } from '../../utils/core.util';
+import { ILitComponent, ILitModule } from '../utils/compiler.utils';
 
 /**
  * @TODO move this into its own file!
@@ -22,7 +22,7 @@ export interface LitModuleConfig {
 export const LitModule = (config: LitModuleConfig = {}): GenericClassDecorator<Type<any>> => {
   return (target: Type<any>): void => {
 
-    config.path = config.path || "";
+    config.path = config.path || '';
     config.imports = config.imports || [];
     config.exports = config.exports || [];
 
