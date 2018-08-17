@@ -10,6 +10,7 @@
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
 - [ ] Code Improvement (refactoring, no spec changes)
+- [ ] Documentation change (no tests or code was touched)
 
 ## How Has This Been Tested?
 <!--- Please describe in detail how you tested your changes. -->
