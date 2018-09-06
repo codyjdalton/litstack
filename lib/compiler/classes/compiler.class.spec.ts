@@ -426,4 +426,33 @@ describe('Class: Compiler', () => {
                 done();
             });
     });
+
+    it('should allow extending a default component', (done) => {
+
+        class DefaultComponent {
+
+            @GetMapping()
+            public findAbstract(res: HttpResponse) {
+                res.success({});
+            }
+        }
+
+        @LitComponent()
+        class TestComponent extends DefaultComponent {
+            // ..
+        }
+
+        const component: LitComponentTest = TestBed.start(TestComponent);
+
+        component
+            .get('/')
+            .expect(200)
+            .expect((res) => {
+                expect(res.body).deep.equal({});
+            })
+            .end((err) => {
+                if (err) { return done(err); }
+                done();
+            });
+    });
 });

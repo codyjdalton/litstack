@@ -95,7 +95,15 @@ export class ServiceCompiler extends CoreCompiler {
      * @returns {string[]}
      */
     private getMethodList(component: ILitComponent): string[] {
-        return Object.getOwnPropertyNames(component.prototype)
+
+        const parent: ILitComponent = Object.getPrototypeOf(component).prototype;
+        let parentProps: string[] = [];
+
+        if (parent) {
+            parentProps = Object.getOwnPropertyNames(parent);
+        }
+
+        return parentProps.concat(Object.getOwnPropertyNames(component.prototype))
                      .filter(
                         (name: string) => name !== 'constructor' // <-- maybe someday
                      );
