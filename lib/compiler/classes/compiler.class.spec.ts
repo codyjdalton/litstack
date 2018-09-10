@@ -5,7 +5,7 @@ import { expect } from 'chai';
 
 import { LitComponent, LitModule, LitService } from '../..';
 import { HttpNext, HttpRequest, HttpResponse } from '../../http';
-import { DeleteMapping, GetMapping, PostMapping, PutMapping } from '../../http/mappings';
+import { DeleteMapping, GetMapping, PostMapping, PutMapping, RequestMapping } from '../../http/mappings';
 import { LitComponentTest, TestBed } from '../../testing';
 
 describe('Class: Compiler', () => {
@@ -451,6 +451,54 @@ describe('Class: Compiler', () => {
                 expect(res.body).deep.equal({});
             })
             .end((err) => {
+                if (err) { return done(err); }
+                done();
+            });
+    });
+
+    it('should allow using middlewares', (done) => {
+
+        let testValue: string = '';
+
+        @LitComponent()
+        class PreMiddleware {
+
+            @RequestMapping()
+            public test(req, res, next) {
+                testValue = 'newValue';
+                next();
+            }
+        }
+
+        @LitComponent()
+        class SomeComponent {
+
+            @GetMapping({
+                path: ':id'
+            })
+            public getOne(req, res) {
+                res.success({
+                    message: testValue
+                });
+            }
+        }
+
+        @LitModule({
+            exports: [
+                PreMiddleware,
+                SomeComponent
+            ]
+        })
+        class TestModule {}
+
+        const aModule: LitComponentTest = TestBed.startModule(TestModule);
+
+        aModule.get('/some-val')
+            .expect(200)
+            .expect((res) => {
+                expect(res.body).deep.equal({ message: 'newValue' });
+            })
+            .end((err, res) => {
                 if (err) { return done(err); }
                 done();
             });

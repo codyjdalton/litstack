@@ -11,13 +11,11 @@ import { RequestConfig } from '../models/request-config.model';
 /**
  * Create generic request mapping method
  */
-const GenericMapping = (type: RequestMethod = RequestMethod.ANY) => {
+const GenericMapping = (type: RequestMethod = RequestMethod.USE) => {
     return (config: RequestConfig = {}): any => {
         return (target: Type<any>, propertyKey: string, descriptor: PropertyDescriptor): void => {
 
-          if (type !== RequestMethod.ANY) {
-            config.method = type;
-          }
+          config.method = type;
 
           Injector.set(target, config, propertyKey);
         };

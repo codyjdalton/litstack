@@ -2,7 +2,7 @@
  * request-method.enum
  */
 export enum RequestMethod {
-    ANY = 'any',
+    USE = 'use',
     GET = 'get',
     PUT = 'put',
     POST = 'post',
