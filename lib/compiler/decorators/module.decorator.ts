@@ -7,6 +7,7 @@ import { ILitComponent, ILitModule } from '../utils/compiler.utils';
 
 /**
  * @TODO move this into its own file!
+ * Something like /config
  */
 export interface LitModuleConfig {
   path?: string;
