@@ -118,7 +118,7 @@ export class ServiceCompiler extends CoreCompiler {
      *
      * returns: 'some/path'
      */
-    private getPath(parts: Array<string | null | undefined>): string {
+    private getPath(parts: (string | null | undefined)[]): string {
         return parts.filter(
             (part) => part
         ).join('/');
