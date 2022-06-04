@@ -9,7 +9,7 @@
     "default-response": "^1.0.1",
     "express": "^4.17.1",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^6.6.7",
+    "rxjs": "^7.0.0",
     "super-injector": "^1.0.5",
     "supertest": "^6.1.3"
   },
