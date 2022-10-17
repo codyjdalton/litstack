@@ -1,6 +1,6 @@
 {
   "name": "@litstack/core",
-  "version": "0.9.1",
+  "version": "1.0.0",
   "description": "Typescript REST Framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
