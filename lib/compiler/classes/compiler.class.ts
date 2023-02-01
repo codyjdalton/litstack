@@ -3,6 +3,7 @@
  */
 import BodyParser = require('body-parser');
 import express = require('express');
+import cors = require('cors');
 
 import { Application, RequestHandler } from 'express';
 
@@ -61,6 +62,9 @@ export class ServiceCompiler extends CoreCompiler {
      * Adds body parser to this.app
      */
     private addParser(): void {
+
+        // add cors support...
+        this.app.use(cors());
 
         // add body parser support
         // parse application/x-www-form-urlencoded
