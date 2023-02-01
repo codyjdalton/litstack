@@ -64,7 +64,9 @@ export class ServiceCompiler extends CoreCompiler {
     private addParser(): void {
 
         // add cors support...
-        this.app.use(cors());
+        this.app.use(cors({
+            origin: '*'
+        }));
 
         // add body parser support
         // parse application/x-www-form-urlencoded
